@@ -229,7 +229,7 @@ export default class Format {
    * Deciphers the streaming url of the format.
    * @returns Deciphered URL.
    */
-  decipher(player: Player | undefined): string {
+  decipher(player: Player | undefined): Promise<string> {
     if (!player) throw new InnertubeError('Cannot decipher format, this session appears to have no valid player.');
     return player.decipher(this.url, this.signature_cipher, this.cipher, this.#this_response_nsig_cache);
   }

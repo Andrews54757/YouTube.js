@@ -1,7 +1,6 @@
 // Deno Platform Support
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
-import evaluate from './jsruntime/jinter.js';
 import sha1Hash from './polyfills/web-crypto.js';
 import package_json from '../../package.json' assert { type: 'json' };
 
@@ -93,7 +92,6 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
-  eval: evaluate,
   fetch: globalThis.fetch,
   Request: globalThis.Request,
   Response: globalThis.Response,

@@ -1,8 +1,8 @@
 import { Memo } from '../parser/helpers.js';
 import { Text } from '../parser/misc.js';
 import Log from './Log.js';
+import {parse} from 'acorn';
 import userAgents from './user-agents.js';
-import { Jinter } from 'jintr';
 
 import type { EmojiRun, TextRun } from '../parser/misc.js';
 import type { FetchFunction } from '../types/PlatformShim.js';
@@ -287,7 +287,7 @@ export type FindFunctionResult = {
 export function findFunction(source: string, args: FindFunctionArgs): FindFunctionResult | undefined {
   const { name, includes, regexp } = args;
 
-  const node = Jinter.parseScript(source);
+  const node = parse(source, { ecmaVersion: 2020 }) as any;
   const stack = [ node ];
 
   for (let i = 0; i < stack.length; i++) {

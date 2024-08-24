@@ -13,15 +13,17 @@ export default class Player {
   nsig_sc?: string;
   sig_sc?: string;
   po_token?: string;
+  evaluator: Function;
 
-  constructor(player_id: string, signature_timestamp: number, sig_sc?: string, nsig_sc?: string) {
+  constructor(player_id: string, signature_timestamp: number, evaluator: Function, sig_sc?: string, nsig_sc?: string) {
     this.player_id = player_id;
     this.sts = signature_timestamp;
     this.nsig_sc = nsig_sc;
     this.sig_sc = sig_sc;
+    this.evaluator = evaluator;
   }
 
-  static async create(cache: ICache | undefined, fetch: FetchFunction = Platform.shim.fetch, po_token?: string): Promise<Player> {
+  static async create(cache: ICache | undefined, evaluator: Function, fetch: FetchFunction = Platform.shim.fetch, po_token?: string): Promise<Player> {
     const url = new URL('/iframe_api', Constants.URLS.YT_BASE);
     const res = await fetch(url);
 
@@ -39,7 +41,7 @@ export default class Player {
 
     // We have the player id, now we can check if we have a cached player.
     if (cache) {
-      const cached_player = await Player.fromCache(cache, player_id);
+      const cached_player = await Player.fromCache(cache, player_id, evaluator);
       if (cached_player) {
         Log.info(TAG, 'Found up-to-date player data in cache.');
         cached_player.po_token = po_token;
@@ -69,13 +71,13 @@ export default class Player {
 
     Log.info(TAG, `Got signature timestamp (${sig_timestamp}) and algorithms needed to decipher signatures.`);
 
-    const player = await Player.fromSource(player_id, sig_timestamp, cache, sig_sc, nsig_sc);
+    const player = await Player.fromSource(player_id, sig_timestamp, evaluator, cache, sig_sc, nsig_sc);
     player.po_token = po_token;
 
     return player;
   }
 
-  decipher(url?: string, signature_cipher?: string, cipher?: string, this_response_nsig_cache?: Map<string, string>): string {
+  async decipher(url?: string, signature_cipher?: string, cipher?: string, this_response_nsig_cache?: Map<string, string>): Promise<string> {
     url = url || signature_cipher || cipher;
 
     if (!url)
@@ -85,7 +87,7 @@ export default class Player {
     const url_components = new URL(args.get('url') || url);
 
     if (this.sig_sc && (signature_cipher || cipher)) {
-      const signature = Platform.shim.eval(this.sig_sc, {
+      const signature = await this.evaluator(this.sig_sc, {
         sig: args.get('s')
       });
 
@@ -109,7 +111,7 @@ export default class Player {
       if (this_response_nsig_cache && this_response_nsig_cache.has(n)) {
         nsig = this_response_nsig_cache.get(n) as string;
       } else {
-        nsig = Platform.shim.eval(this.nsig_sc, {
+        nsig = await this.evaluator(this.nsig_sc, {
           nsig: n
         });
 
@@ -162,7 +164,7 @@ export default class Player {
     return url_components.toString();
   }
 
-  static async fromCache(cache: ICache, player_id: string): Promise<Player | null> {
+  static async fromCache(cache: ICache, player_id: string, evaluator: Function): Promise<Player | null> {
     const buffer = await cache.get(player_id);
 
     if (!buffer)
@@ -183,11 +185,11 @@ export default class Player {
     const sig_sc = LZW.decompress(new TextDecoder().decode(sig_buf));
     const nsig_sc = LZW.decompress(new TextDecoder().decode(nsig_buf));
 
-    return new Player(player_id, sig_timestamp, sig_sc, nsig_sc);
+    return new Player(player_id, sig_timestamp, evaluator, sig_sc, nsig_sc);
   }
 
-  static async fromSource(player_id: string, sig_timestamp: number, cache?: ICache, sig_sc?: string, nsig_sc?: string): Promise<Player> {
-    const player = new Player(player_id, sig_timestamp, sig_sc, nsig_sc);
+  static async fromSource(player_id: string, sig_timestamp: number, evaluator: Function, cache?: ICache, sig_sc?: string, nsig_sc?: string): Promise<Player> {
+    const player = new Player(player_id, sig_timestamp, evaluator, sig_sc, nsig_sc);
     await player.cache(cache);
     return player;
   }

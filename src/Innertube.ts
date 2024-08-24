@@ -1,31 +1,14 @@
 import Session from './core/Session.js';
-import { Kids, Music, Studio } from './core/clients/index.js';
-import { AccountManager, InteractionManager, PlaylistManager } from './core/managers/index.js';
-import { Feed, TabbedFeed } from './core/mixins/index.js';
 
 import {
   BrowseEndpoint,
-  GetNotificationMenuEndpoint,
-  GuideEndpoint,
   NextEndpoint,
   PlayerEndpoint,
-  ResolveURLEndpoint,
-  SearchEndpoint,
-  Reel,
-  Notification
+  Reel
 } from './core/endpoints/index.js';
 
 import {
-  Channel,
-  Comments,
-  Guide,
-  HashtagFeed,
-  History,
-  HomeFeed,
-  Library,
-  NotificationsMenu,
   Playlist,
-  Search,
   VideoInfo
 } from './parser/youtube/index.js';
 
@@ -34,12 +17,11 @@ import { ShortFormVideoInfo } from './parser/ytshorts/index.js';
 import NavigationEndpoint from './parser/classes/NavigationEndpoint.js';
 
 import * as Proto from './proto/index.js';
-import * as Constants from './utils/Constants.js';
 import { InnertubeError, generateRandomString, throwIfMissing } from './utils/Utils.js';
 
 import type { ApiResponse } from './core/Actions.js';
 import type { INextRequest } from './types/index.js';
-import type { IBrowseResponse, IParsedResponse } from './parser/types/index.js';
+import type { IParsedResponse } from './parser/types/index.js';
 import type { DownloadOptions, FormatOptions } from './types/FormatUtils.js';
 import type { SessionOptions } from './core/Session.js';
 import type Format from './parser/classes/misc/Format.js';
@@ -66,7 +48,7 @@ export default class Innertube {
     this.#session = session;
   }
 
-  static async create(config: InnertubeConfig = {}): Promise<Innertube> {
+  static async create(config: InnertubeConfig): Promise<Innertube> {
     return new Innertube(await Session.create(config));
   }
 
@@ -146,137 +128,6 @@ export default class Innertube {
 
     return new ShortFormVideoInfo([ response[0] ], this.actions, cpn, response[1]);
   }
-
-  async search(query: string, filters: SearchFilters = {}): Promise<Search> {
-    throwIfMissing({ query });
-
-    const response = await this.actions.execute(
-      SearchEndpoint.PATH, SearchEndpoint.build({
-        query, params: filters ? Proto.encodeSearchFilters(filters) : undefined
-      })
-    );
-
-    return new Search(this.actions, response);
-  }
-
-  async getSearchSuggestions(query: string): Promise<string[]> {
-    throwIfMissing({ query });
-
-    const url = new URL(`${Constants.URLS.YT_SUGGESTIONS}search`);
-    url.searchParams.set('q', query);
-    url.searchParams.set('hl', this.#session.context.client.hl);
-    url.searchParams.set('gl', this.#session.context.client.gl);
-    url.searchParams.set('ds', 'yt');
-    url.searchParams.set('client', 'youtube');
-    url.searchParams.set('xssi', 't');
-    url.searchParams.set('oe', 'UTF');
-
-    const response = await this.#session.http.fetch(url);
-    const response_data = await response.text();
-
-    const data = JSON.parse(response_data.replace(')]}\'', ''));
-    const suggestions = data[1].map((suggestion: any) => suggestion[0]);
-
-    return suggestions;
-  }
-
-  async getComments(video_id: string, sort_by?: 'TOP_COMMENTS' | 'NEWEST_FIRST'): Promise<Comments> {
-    throwIfMissing({ video_id });
-
-    const response = await this.actions.execute(
-      NextEndpoint.PATH, NextEndpoint.build({
-        continuation: Proto.encodeCommentsSectionParams(video_id, {
-          sort_by: sort_by || 'TOP_COMMENTS'
-        })
-      })
-    );
-
-    return new Comments(this.actions, response.data);
-  }
-
-  async getHomeFeed(): Promise<HomeFeed> {
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, BrowseEndpoint.build({ browse_id: 'FEwhat_to_watch' })
-    );
-    return new HomeFeed(this.actions, response);
-  }
-
-  /**
-   * Retrieves YouTube's content guide.
-   */
-  async getGuide(): Promise<Guide> {
-    const response = await this.actions.execute(GuideEndpoint.PATH);
-    return new Guide(response.data);
-  }
-
-  async getLibrary(): Promise<Library> {
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, BrowseEndpoint.build({ browse_id: 'FElibrary' })
-    );
-    return new Library(this.actions, response);
-  }
-
-  async getHistory(): Promise<History> {
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, BrowseEndpoint.build({ browse_id: 'FEhistory' })
-    );
-    return new History(this.actions, response);
-  }
-
-  async getTrending(): Promise<TabbedFeed<IBrowseResponse>> {
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, { ...BrowseEndpoint.build({ browse_id: 'FEtrending' }), parse: true }
-    );
-    return new TabbedFeed(this.actions, response);
-  }
-
-  async getSubscriptionsFeed(): Promise<Feed<IBrowseResponse>> {
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, { ...BrowseEndpoint.build({ browse_id: 'FEsubscriptions' }), parse: true }
-    );
-    return new Feed(this.actions, response);
-  }
-
-  async getChannelsFeed(): Promise<Feed<IBrowseResponse>> {
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, { ...BrowseEndpoint.build({ browse_id: 'FEchannels' }), parse: true }
-    );
-    return new Feed(this.actions, response);
-  }
-
-  async getChannel(id: string): Promise<Channel> {
-    throwIfMissing({ id });
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, BrowseEndpoint.build({ browse_id: id })
-    );
-    return new Channel(this.actions, response);
-  }
-
-  async getNotifications(): Promise<NotificationsMenu> {
-    const response = await this.actions.execute(
-      GetNotificationMenuEndpoint.PATH, GetNotificationMenuEndpoint.build({
-        notifications_menu_request_type: 'NOTIFICATIONS_MENU_REQUEST_TYPE_INBOX'
-      })
-    );
-    return new NotificationsMenu(this.actions, response);
-  }
-
-  async getUnseenNotificationsCount(): Promise<number> {
-    const response = await this.actions.execute(Notification.GetUnseenCountEndpoint.PATH);
-    // FIXME: properly parse this.
-    return response.data?.unseenCount || response.data?.actions?.[0].updateNotificationsUnseenCountAction?.unseenCount || 0;
-  }
-
-  /**
-   * Retrieves the user's playlists.
-   */
-  async getPlaylists(): Promise<Feed<IBrowseResponse>> {
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, { ...BrowseEndpoint.build({ browse_id: 'FEplaylist_aggregation' }), parse: true }
-    );
-    return new Feed(this.actions, response);
-  }
-
   async getPlaylist(id: string): Promise<Playlist> {
     throwIfMissing({ id });
 
@@ -291,19 +142,6 @@ export default class Innertube {
     return new Playlist(this.actions, response);
   }
 
-  async getHashtag(hashtag: string): Promise<HashtagFeed> {
-    throwIfMissing({ hashtag });
-
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, BrowseEndpoint.build({
-        browse_id: 'FEhashtag',
-        params: Proto.encodeHashtag(hashtag)
-      })
-    );
-
-    return new HashtagFeed(this.actions, response);
-  }
-
   /**
    * An alternative to {@link download}.
    * Returns deciphered streaming data.
@@ -316,7 +154,7 @@ export default class Innertube {
     const info = await this.getBasicInfo(video_id);
 
     const format = info.chooseFormat(options);
-    format.url = format.decipher(this.#session.player);
+    format.url = await format.decipher(this.#session.player);
 
     return format;
   }
@@ -333,21 +171,6 @@ export default class Innertube {
   }
 
   /**
-   * Resolves the given URL.
-   * @param url - The URL.
-   */
-  async resolveURL(url: string): Promise<NavigationEndpoint> {
-    const response = await this.actions.execute(
-      ResolveURLEndpoint.PATH, { ...ResolveURLEndpoint.build({ url }), parse: true }
-    );
-
-    if (!response.endpoint)
-      throw new InnertubeError('Failed to resolve URL. Expected a NavigationEndpoint but got undefined', response);
-
-    return response.endpoint;
-  }
-
-  /**
    * Utility method to call an endpoint without having to use {@link Actions}.
    * @param endpoint -The endpoint to call.
    * @param args - Call arguments.
@@ -356,48 +179,6 @@ export default class Innertube {
   call(endpoint: NavigationEndpoint, args?: { [key: string]: any; parse?: false }): Promise<ApiResponse>;
   call(endpoint: NavigationEndpoint, args?: object): Promise<IParsedResponse | ApiResponse> {
     return endpoint.call(this.actions, args);
-  }
-
-  /**
-   * An interface for interacting with YouTube Music.
-   */
-  get music() {
-    return new Music(this.#session);
-  }
-
-  /**
-   * An interface for interacting with YouTube Studio.
-   */
-  get studio() {
-    return new Studio(this.#session);
-  }
-
-  /**
-   * An interface for interacting with YouTube Kids.
-   */
-  get kids() {
-    return new Kids(this.#session);
-  }
-
-  /**
-   * An interface for managing and retrieving account information.
-   */
-  get account() {
-    return new AccountManager(this.#session.actions);
-  }
-
-  /**
-   * An interface for managing playlists.
-   */
-  get playlist() {
-    return new PlaylistManager(this.#session.actions);
-  }
-
-  /**
-   * An interface for directly interacting with certain YouTube features.
-   */
-  get interact() {
-    return new InteractionManager(this.#session.actions);
   }
 
   /**

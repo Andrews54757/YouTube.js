@@ -1,6 +1,5 @@
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
-import evaluate from './jsruntime/jinter.js';
 import { $INLINE_JSON } from 'ts-transformer-inline-file';
 import sha1Hash from './polyfills/web-crypto.js';
 
@@ -55,7 +54,6 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
-  eval: evaluate,
   fetch: fetch.bind(globalThis),
   Request: Request,
   Response: Response,

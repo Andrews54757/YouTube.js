@@ -2,10 +2,8 @@ import * as Constants from './Constants.js';
 
 import {
   Platform,
-  generateSidAuth,
   getRandomUserAgent,
-  InnertubeError,
-  getCookie
+  InnertubeError
 } from './Utils.js';
 
 import type { Context, Session } from '../core/index.js';
@@ -78,7 +76,6 @@ export default class HTTPClient {
     const content_type = request_headers.get('Content-Type');
 
     let request_body = body;
-    let is_web_kids = false;
 
     const is_innertube_req =
       baseURL === innertube_url ||
@@ -114,7 +111,6 @@ export default class HTTPClient {
         request_headers.set('User-Agent', Constants.CLIENTS.IOS.USER_AGENT);
       }
 
-      is_web_kids = n_body.context.client.clientName === 'WEB_KIDS';
       request_body = JSON.stringify(n_body);
     } else if (content_type === 'application/x-protobuf') {
       // Assume it is always an Android request.
@@ -122,30 +118,6 @@ export default class HTTPClient {
         request_headers.set('User-Agent', Constants.CLIENTS.ANDROID.USER_AGENT);
         request_headers.set('X-GOOG-API-FORMAT-VERSION', '2');
         request_headers.delete('X-Youtube-Client-Version');
-      }
-    }
-
-    // Authenticate (NOTE: YouTube Kids does not support regular bearer tokens)
-    if (this.#session.logged_in && is_innertube_req && !is_web_kids) {
-      const oauth = this.#session.oauth;
-
-      if (oauth.oauth2_tokens) {
-        if (oauth.shouldRefreshToken()) {
-          await oauth.refreshAccessToken();
-        }
-
-        request_headers.set('Authorization', `Bearer ${oauth.oauth2_tokens.access_token}`);
-      }
-
-      if (this.#cookie) {
-        const sapisid = getCookie(this.#cookie, 'SAPISID');
-
-        if (sapisid) {
-          request_headers.set('Authorization', await generateSidAuth(sapisid));
-          request_headers.set('X-Goog-Authuser', this.#session.account_index.toString());
-        }
-
-        request_headers.set('Cookie', this.#cookie);
       }
     }
 

@@ -19,7 +19,6 @@ import os from 'os';
 import fs from 'fs/promises';
 import CustomEvent from './polyfills/node-custom-event.js';
 import { fileURLToPath } from 'url';
-import evaluate from './jsruntime/jinter.js';
 import { $INLINE_JSON } from 'ts-transformer-inline-file';
 
 const meta_url = import.meta.url;
@@ -121,7 +120,6 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
-  eval: evaluate,
   fetch: defaultFetch as unknown as FetchFunction,
   Request: Request as unknown as typeof globalThis.Request,
   Response: Response as unknown as typeof globalThis.Response,
