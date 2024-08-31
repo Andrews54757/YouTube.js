@@ -20,23 +20,10 @@ import * as Proto from './proto/index.js';
 import { InnertubeError, generateRandomString, throwIfMissing } from './utils/Utils.js';
 
 import type { ApiResponse } from './core/Actions.js';
-import type { INextRequest } from './types/index.js';
+import type { InnerTubeConfig, InnerTubeClient, INextRequest } from './types/index.js';
 import type { IParsedResponse } from './parser/types/index.js';
 import type { DownloadOptions, FormatOptions } from './types/FormatUtils.js';
-import type { SessionOptions } from './core/Session.js';
 import type Format from './parser/classes/misc/Format.js';
-
-export type InnertubeConfig = SessionOptions;
-
-export type InnerTubeClient = 'IOS' | 'WEB' | 'ANDROID' | 'YTMUSIC' | 'YTMUSIC_ANDROID' | 'YTSTUDIO_ANDROID' | 'TV_EMBEDDED' | 'YTKIDS';
-
-export type SearchFilters = Partial<{
-  upload_date: 'all' | 'hour' | 'today' | 'week' | 'month' | 'year';
-  type: 'all' | 'video' | 'channel' | 'playlist' | 'movie';
-  duration: 'all' | 'short' | 'medium' | 'long';
-  sort_by: 'relevance' | 'rating' | 'upload_date' | 'view_count';
-  features: ('hd' | 'subtitles' | 'creative_commons' | '3d' | 'live' | 'purchased' | '4k' | '360' | 'location' | 'hdr' | 'vr180')[];
-}>;
 
 /**
  * Provides access to various services and modules in the YouTube API.
@@ -48,7 +35,7 @@ export default class Innertube {
     this.#session = session;
   }
 
-  static async create(config: InnertubeConfig): Promise<Innertube> {
+  static async create(config: InnerTubeConfig = {}): Promise<Innertube> {
     return new Innertube(await Session.create(config));
   }
 
