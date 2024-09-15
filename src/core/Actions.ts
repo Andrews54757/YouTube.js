@@ -53,7 +53,11 @@ export default class Actions {
    * @param client - The client to use.
    * @param params - Call parameters.
    */
-  async stats(url: string, client: { client_name: string; client_version: string }, params: { [key: string]: any }): Promise<Response> {
+  async stats(url: string, client: { 
+    client_name: string; 
+    client_version: string;
+    visitor_data?: string;
+  }, params: { [key: string]: any }): Promise<Response> {
     const s_url = new URL(url);
 
     s_url.searchParams.set('ver', '2');
@@ -65,7 +69,7 @@ export default class Actions {
       s_url.searchParams.set(key, params[key]);
     }
 
-    const response = await this.session.http.fetch(s_url);
+    const response = await this.session.http.fetch(s_url, undefined, { visitor_data: client.visitor_data });
 
     return response;
   }

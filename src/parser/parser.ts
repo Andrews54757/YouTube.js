@@ -394,7 +394,7 @@ export function parseResponse<T extends IParsedResponse = IParsedResponse>(data:
     // As they are the same for a response, we only need to decipher them once
     // For all futher deciphering calls on formats from that response, we can use the cached output, given the same input n param
     const this_response_nsig_cache = new Map<string, string>();
-
+    console.log(data);
     const streaming_data = {
       expires: new Date(Date.now() + parseInt(data.streamingData.expiresInSeconds) * 1000),
       formats: parseFormats(data.streamingData.formats, this_response_nsig_cache),

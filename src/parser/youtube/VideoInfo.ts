@@ -172,8 +172,8 @@ export default class VideoInfo extends MediaInfo {
   /**
    * Adds video to the watch history.
    */
-  async addToWatchHistory(): Promise<Response> {
-    return super.addToWatchHistory();
+  async addToWatchHistory(options = {}): Promise<Response> {
+    return super.addToWatchHistory(options);
   }
 
   /**

@@ -35,7 +35,7 @@ export default class Innertube {
     this.#session = session;
   }
 
-  static async create(config: InnerTubeConfig = {}): Promise<Innertube> {
+  static async create(config: InnerTubeConfig): Promise<Innertube> {
     return new Innertube(await Session.create(config));
   }
 

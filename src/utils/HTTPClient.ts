@@ -30,7 +30,8 @@ export default class HTTPClient {
 
   async fetch(
     input: URL | Request | string,
-    init?: RequestInit & HTTPClientInit
+    init?: RequestInit & HTTPClientInit,
+    options: { visitor_data?: string } = {}
   ): Promise<Response> {
     const innertube_url = Constants.URLS.API.PRODUCTION_1 + this.#session.api_version;
     const baseURL = init?.baseURL || innertube_url;
@@ -54,7 +55,7 @@ export default class HTTPClient {
 
     request_headers.set('Accept', '*/*');
     request_headers.set('Accept-Language', '*');
-    request_headers.set('X-Goog-Visitor-Id', this.#session.context.client.visitorData || '');
+    request_headers.set('X-Goog-Visitor-Id', options?.visitor_data || this.#session.context.client.visitorData || '');
     request_headers.set('X-Youtube-Client-Version', this.#session.context.client.clientVersion || '');
 
     const client_constant = Object.values(Constants.CLIENTS).find((client) => {
