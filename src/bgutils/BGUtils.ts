@@ -12,7 +12,7 @@
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import { Proto } from '../platform/lib.js';
+import { ProtoUtils } from '../platform/lib.js';
 import type { FetchFunction } from '../types/PlatformShim.js';
 import { Platform, Utils } from '../utils/index.js';
 import { SandboxedEvaluator } from './SandboxedEvaluator.js';
@@ -137,7 +137,7 @@ export class BGUtils {
     }
 
     if (!vd) {
-      vd = Proto.encodeVisitorData(Utils.generateRandomString(11), Math.floor(Date.now() / 1000));
+      vd = ProtoUtils.encodeVisitorData(Utils.generateRandomString(11), Math.floor(Date.now() / 1000));
     }
 
     const evaluator = new SandboxedEvaluator(runnerLocation);
