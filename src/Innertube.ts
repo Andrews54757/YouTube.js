@@ -16,14 +16,22 @@ import { ShortFormVideoInfo } from './parser/ytshorts/index.js';
 
 import NavigationEndpoint from './parser/classes/NavigationEndpoint.js';
 
-import * as Proto from './proto/index.js';
-import { InnertubeError, generateRandomString, throwIfMissing } from './utils/Utils.js';
+import * as Constants from './utils/Constants.js';
+import { InnertubeError, generateRandomString, throwIfMissing, u8ToBase64 } from './utils/Utils.js';
 
 import type { ApiResponse } from './core/Actions.js';
 import type { InnerTubeConfig, InnerTubeClient, INextRequest } from './types/index.js';
 import type { IParsedResponse } from './parser/types/index.js';
 import type { DownloadOptions, FormatOptions } from './types/FormatUtils.js';
 import type Format from './parser/classes/misc/Format.js';
+
+import {
+  SearchFilter_SortBy,
+  SearchFilter_Filters_UploadDate,
+  SearchFilter_Filters_SearchType,
+  SearchFilter_Filters_Duration
+} from '../protos/generated/misc/params.js';
+import { Hashtag, SearchFilter, ReelSequence, GetCommentsSectionParams } from '../protos/generated/misc/params.js';
 
 /**
  * Provides access to various services and modules in the YouTube API.
@@ -103,9 +111,20 @@ export default class Innertube {
       Reel.ReelItemWatchEndpoint.PATH, Reel.ReelItemWatchEndpoint.build({ video_id, client })
     );
 
+    const writer = ReelSequence.encode({
+      shortId: video_id,
+      params: {
+        number: 5
+      },
+      feature2: 25,
+      feature3: 0
+    });
+
+    const params = encodeURIComponent(u8ToBase64(writer.finish()));
+
     const sequence_response = this.actions.execute(
       Reel.ReelWatchSequenceEndpoint.PATH, Reel.ReelWatchSequenceEndpoint.build({
-        sequence_params: Proto.encodeReelSequence(video_id)
+        sequence_params: params
       })
     );
 
