@@ -10,7 +10,7 @@
 
 #### Defined in
 
-[src/core/Actions.ts:16](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/Actions.ts#L16)
+[src/core/Actions.ts:15](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/Actions.ts#L15)
 
 ***
 
@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[src/core/Actions.ts:15](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/Actions.ts#L15)
+[src/core/Actions.ts:14](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/Actions.ts#L14)
 
 ***
 
@@ -30,4 +30,4 @@
 
 #### Defined in
 
-[src/core/Actions.ts:14](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/Actions.ts#L14)
+[src/core/Actions.ts:13](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/Actions.ts#L13)

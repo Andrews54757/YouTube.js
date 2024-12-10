@@ -18,7 +18,7 @@
 
 #### Defined in
 
-[src/parser/youtube/AccountInfo.ts:16](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/parser/youtube/AccountInfo.ts#L16)
+[src/parser/youtube/AccountInfo.ts:14](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/parser/youtube/AccountInfo.ts#L14)
 
 ## Properties
 
@@ -28,17 +28,7 @@
 
 #### Defined in
 
-[src/parser/youtube/AccountInfo.ts:13](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/parser/youtube/AccountInfo.ts#L13)
-
-***
-
-### footers
-
-> **footers**: `null` \| [`AccountChannel`](../../YTNodes/classes/AccountChannel.md)
-
-#### Defined in
-
-[src/parser/youtube/AccountInfo.ts:14](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/parser/youtube/AccountInfo.ts#L14)
+[src/parser/youtube/AccountInfo.ts:12](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/parser/youtube/AccountInfo.ts#L12)
 
 ## Accessors
 
@@ -52,4 +42,4 @@
 
 #### Defined in
 
-[src/parser/youtube/AccountInfo.ts:31](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/parser/youtube/AccountInfo.ts#L31)
+[src/parser/youtube/AccountInfo.ts:28](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/parser/youtube/AccountInfo.ts#L28)

@@ -1,5 +1,5 @@
 import express from 'express';
-import { Innertube, UniversalCache, YTNodes } from 'youtubei.js';
+import { Innertube, UniversalCache } from 'youtubei.js';
 import { OAuth2Client } from 'google-auth-library';
 
 const app = express();
@@ -39,31 +39,17 @@ app.get('/', async (_req, res) => {
     });
   }
 
-  if (await cache.get('youtubei_oauth_credentials')) {
+  if (await cache.get('youtubei_oauth_credentials'))
     await innertube.session.signIn();
-  }
 
   if (innertube.session.logged_in) {
     console.info('Innertube instance is logged in.');
 
     const userInfo = await innertube.account.getInfo();
-    const library = await innertube.getLibrary();
+    
+    console.log(await innertube.getBasicInfo('R8vgwMYSQi8', 'ANDROID'));
 
-    const html = `
-      <p>Hello ${userInfo.contents?.contents.first().account_name.text}! You have ${userInfo.contents?.contents.first().account_byline.text} on your YouTube channel.</p>
-      <p>Email: ${userInfo.contents?.contents.first().endpoint.payload.directSigninUserProfile.email}</p>
-      <p>Obfuscated Gaia ID: ${userInfo.contents?.contents.first().endpoint.payload.directSigninIdentity.effectiveObfuscatedGaiaId}</p>
-      <p>Channel URL: <a href="https://www.youtube.com/channel/${userInfo.footers?.endpoint.payload.browseId}">https://www.youtube.com/channel/${userInfo.footers?.endpoint.payload.browseId}</a></p>
-      <p>Profile Picture:</p>
-      <img src="${userInfo.contents?.contents.first().account_photo[0].url}" />
-      <p>Recently watched videos:</p>
-      <ul>
-        ${library.videos.map((video) => `<li><a href="${video.as(YTNodes.GridVideo).endpoint.toURL()}">${video.title.toString()}</a> by ${video.as(YTNodes.GridVideo).author.name.toString()} - ${video.as(YTNodes.GridVideo).duration?.text}</li>`).join('')}
-      </ul>
-      <button onclick="window.location.href = '/logout'">Logout</button>
-    `;
-
-    return res.send(html);
+    return res.send({ userInfo });
   }
 
   if (!oAuth2Client) {
@@ -79,6 +65,8 @@ app.get('/', async (_req, res) => {
       access_type: 'offline',
       scope: [
         "http://gdata.youtube.com",
+        "https://www.googleapis.com/auth/youtube",
+        "https://www.googleapis.com/auth/youtube.force-ssl",
         "https://www.googleapis.com/auth/youtube-paid-content"
       ],
       include_granted_scopes: true,

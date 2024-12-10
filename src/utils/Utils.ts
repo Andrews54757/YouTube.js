@@ -1,11 +1,11 @@
 import { Memo } from '../parser/helpers.js';
 import { Text } from '../parser/misc.js';
-import Log from './Log.js';
-import {parse} from 'acorn';
+import * as Log from './Log.js';
+import { parse } from 'acorn';
 import userAgents from './user-agents.js';
 
 import type { EmojiRun, TextRun } from '../parser/misc.js';
-import type { FetchFunction } from '../types/PlatformShim.js';
+import type { FetchFunction } from '../types/index.js';
 import type PlatformShim from '../types/PlatformShim.js';
 
 const TAG_ = 'Utils';
@@ -319,7 +319,7 @@ export function findFunction(source: string, args: FindFunctionArgs): FindFuncti
     }
 
     for (const key in current) {
-      const child = current[key];
+      const child = (current as Record<string, any>)[key];
       if (Array.isArray(child)) {
         stack.push(...child);
       } else if (typeof child === 'object' && child !== null) {

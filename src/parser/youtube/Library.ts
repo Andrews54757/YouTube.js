@@ -11,8 +11,8 @@ import type { Actions, ApiResponse } from '../../core/index.js';
 import type { IBrowseResponse } from '../types/index.js';
 
 export default class Library extends Feed<IBrowseResponse> {
-  header: PageHeader | null;
-  sections;
+  public header: PageHeader | null;
+  public sections;
 
   constructor(actions: Actions, data: ApiResponse | IBrowseResponse) {
     super(actions, data);
@@ -33,7 +33,8 @@ export default class Library extends Feed<IBrowseResponse> {
   }
 
   async #getAll(shelf: Shelf): Promise<Playlist | History | Feed<IBrowseResponse>> {
-    if (!shelf.menu?.as(Menu).hasKey('top_level_buttons'))
+    if (!shelf.menu?.as(Menu).top_level_buttons)
+
       throw new InnertubeError(`The ${shelf.title.text} shelf doesn't have more items`);
 
     const button = shelf.menu.as(Menu).top_level_buttons.firstOfType(Button);

@@ -6,4 +6,4 @@
 
 ## Defined in
 
-[src/types/PlatformShim.ts:5](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/types/PlatformShim.ts#L5)
+[src/types/PlatformShim.ts:5](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/types/PlatformShim.ts#L5)

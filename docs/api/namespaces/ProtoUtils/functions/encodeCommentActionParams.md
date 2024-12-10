@@ -8,15 +8,7 @@
 
 • **type**: `number`
 
-• **args** = `{}`
-
-• **args.comment\_id?**: `string`
-
-• **args.target\_language?**: `string`
-
-• **args.text?**: `string`
-
-• **args.video\_id?**: `string`
+• **args**: [`CommentActionParamsArgs`](../type-aliases/CommentActionParamsArgs.md) = `{}`
 
 ## Returns
 
@@ -24,4 +16,4 @@
 
 ## Defined in
 
-[src/utils/ProtoUtils.ts:14](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/utils/ProtoUtils.ts#L14)
+[src/utils/ProtoUtils.ts:20](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/utils/ProtoUtils.ts#L20)

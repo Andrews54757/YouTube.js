@@ -18,7 +18,7 @@
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:16](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L16)
+[src/core/managers/InteractionManager.ts:10](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L10)
 
 ## Methods
 
@@ -44,7 +44,7 @@ The comment text
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:127](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L127)
+[src/core/managers/InteractionManager.ts:119](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L119)
 
 ***
 
@@ -66,7 +66,7 @@ The video ID
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:44](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L44)
+[src/core/managers/InteractionManager.ts:38](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L38)
 
 ***
 
@@ -88,7 +88,7 @@ The video ID
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:24](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L24)
+[src/core/managers/InteractionManager.ts:18](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L18)
 
 ***
 
@@ -110,7 +110,7 @@ The video ID
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:64](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L64)
+[src/core/managers/InteractionManager.ts:58](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L58)
 
 ***
 
@@ -137,7 +137,7 @@ The notification type.
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:188](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L188)
+[src/core/managers/InteractionManager.ts:174](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L174)
 
 ***
 
@@ -145,7 +145,7 @@ The notification type.
 
 > **subscribe**(`channel_id`): `Promise`\<[`ApiResponse`](../../../interfaces/ApiResponse.md)\>
 
-Subscribes to a given channel.
+Subscribes to the given channel.
 
 #### Parameters
 
@@ -159,7 +159,7 @@ The channel ID
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:84](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L84)
+[src/core/managers/InteractionManager.ts:78](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L78)
 
 ***
 
@@ -167,11 +167,13 @@ The channel ID
 
 > **translate**(`text`, `target_language`, `args`): `Promise`\<`object`\>
 
-Translates a given text using YouTube's comment translate feature.
+Translates a given text using YouTube's comment translation feature.
 
 #### Parameters
 
 • **text**: `string`
+
+The text to translate
 
 • **target\_language**: `string`
 
@@ -207,7 +209,7 @@ optional arguments
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:160](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L160)
+[src/core/managers/InteractionManager.ts:151](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L151)
 
 ***
 
@@ -215,7 +217,7 @@ optional arguments
 
 > **unsubscribe**(`channel_id`): `Promise`\<[`ApiResponse`](../../../interfaces/ApiResponse.md)\>
 
-Unsubscribes from a given channel.
+Unsubscribes from the given channel.
 
 #### Parameters
 
@@ -229,4 +231,4 @@ The channel ID
 
 #### Defined in
 
-[src/core/managers/InteractionManager.ts:105](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/core/managers/InteractionManager.ts#L105)
+[src/core/managers/InteractionManager.ts:98](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/core/managers/InteractionManager.ts#L98)

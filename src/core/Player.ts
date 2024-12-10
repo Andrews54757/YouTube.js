@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { Log, LZW, Constants } from '../utils/index.js';
 import { Platform, getRandomUserAgent, getStringBetweenStrings, findFunction, PlayerError } from '../utils/Utils.js';
 import type { ICache, FetchFunction } from '../types/index.js';
@@ -8,12 +9,12 @@ const TAG = 'Player';
  * Represents YouTube's player script. This is required to decipher signatures.
  */
 export default class Player {
-  player_id: string;
-  sts: number;
-  nsig_sc?: string;
-  sig_sc?: string;
-  po_token?: string;
-  evaluator: Function;
+  public player_id: string;
+  public sts: number;
+  public nsig_sc?: string;
+  public sig_sc?: string;
+  public po_token?: string;
+  public evaluator: Function;
 
   constructor(player_id: string, signature_timestamp: number, evaluator: Function, sig_sc?: string, nsig_sc?: string) {
     this.player_id = player_id;
@@ -27,8 +28,8 @@ export default class Player {
     const url = new URL('/iframe_api', Constants.URLS.YT_BASE);
     const res = await fetch(url);
 
-    if (res.status !== 200)
-      throw new PlayerError('Failed to request player id');
+    if (!res.ok)
+      throw new PlayerError(`Failed to get player id: ${res.status} (${res.statusText})`);
 
     const js = await res.text();
 
@@ -123,7 +124,7 @@ export default class Player {
           throw new PlayerError('Failed to decipher nsig');
 
         if (nsig.startsWith('enhanced_except_')) {
-          Log.warn(TAG, 'Could not transform nsig, download may be throttled.');
+          Log.warn(TAG, 'Something went wrong while deciphering nsig.');
         } else if (this_response_nsig_cache) {
           this_response_nsig_cache.set(n, nsig);
         }
@@ -142,17 +143,17 @@ export default class Player {
       case 'WEB':
         url_components.searchParams.set('cver', Constants.CLIENTS.WEB.VERSION);
         break;
+      case 'MWEB':
+        url_components.searchParams.set('cver', Constants.CLIENTS.MWEB.VERSION);
+        break;
       case 'WEB_REMIX':
         url_components.searchParams.set('cver', Constants.CLIENTS.YTMUSIC.VERSION);
         break;
       case 'WEB_KIDS':
         url_components.searchParams.set('cver', Constants.CLIENTS.WEB_KIDS.VERSION);
         break;
-      case 'ANDROID':
-        url_components.searchParams.set('cver', Constants.CLIENTS.ANDROID.VERSION);
-        break;
-      case 'ANDROID_MUSIC':
-        url_components.searchParams.set('cver', Constants.CLIENTS.YTMUSIC_ANDROID.VERSION);
+      case 'TVHTML5':
+        url_components.searchParams.set('cver', Constants.CLIENTS.TV.VERSION);
         break;
       case 'TVHTML5_SIMPLY_EMBEDDED_PLAYER':
         url_components.searchParams.set('cver', Constants.CLIENTS.TV_EMBEDDED.VERSION);
@@ -237,10 +238,19 @@ export default class Player {
   }
 
   static extractNSigSourceCode(data: string): string | undefined {
-    const nsig_function = findFunction(data, { includes: 'enhanced_except' });
-    if (nsig_function) {
+    // This used to be the prefix of the error tag (leaving it here for reference).
+    let nsig_function = findFunction(data, { includes: 'enhanced_except' });
+   
+    // This is the suffix of the error tag.
+    if (!nsig_function)
+      nsig_function = findFunction(data, { includes: '-_w8_' });
+    
+    // Usually, only this function uses these dates in the entire script.
+    if (!nsig_function)
+      nsig_function = findFunction(data, { includes: '1969' });
+    
+    if (nsig_function)
       return `${nsig_function.result} ${nsig_function.name}(nsig);`;
-    }
   }
 
   get url(): string {

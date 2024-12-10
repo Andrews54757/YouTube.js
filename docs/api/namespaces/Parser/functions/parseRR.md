@@ -14,4 +14,4 @@
 
 ## Defined in
 
-[src/parser/parser.ts:657](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/parser/parser.ts#L657)
+[src/parser/parser.ts:716](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/parser/parser.ts#L716)

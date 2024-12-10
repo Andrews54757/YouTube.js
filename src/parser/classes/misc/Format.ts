@@ -1,82 +1,90 @@
 import type Player from '../../../core/Player.js';
-import { InnertubeError } from '../../../utils/Utils.js';
 import type { RawNode } from '../../index.js';
 
-export default class Format {
-  #this_response_nsig_cache?: Map<string, string>;
+export type ProjectionType = 'RECTANGULAR' | 'EQUIRECTANGULAR' | 'EQUIRECTANGULAR_THREED_TOP_BOTTOM' | 'MESH';
+export type SpatialAudioType = 'AMBISONICS_5_1' | 'AMBISONICS_QUAD' | 'FOA_WITH_NON_DIEGETIC';
+export type StereoLayout = 'LEFT_RIGHT' | 'TOP_BOTTOM';
 
-  itag: number;
-  url?: string;
-  width?: number;
-  height?: number;
-  last_modified: Date;
-  last_modified_ms: string;
-  content_length?: number;
-  quality?: string;
-  xtags?: string;
-  drm_families?: string[];
-  fps?: number;
-  quality_label?: string;
-  projection_type?: 'RECTANGULAR' | 'EQUIRECTANGULAR' | 'EQUIRECTANGULAR_THREED_TOP_BOTTOM' | 'MESH';
-  average_bitrate?: number;
-  bitrate: number;
-  spatial_audio_type?: 'AMBISONICS_5_1' | 'AMBISONICS_QUAD' | 'FOA_WITH_NON_DIEGETIC';
-  target_duration_dec?: number;
-  fair_play_key_uri?: string;
-  stereo_layout?: 'LEFT_RIGHT' | 'TOP_BOTTOM';
-  max_dvr_duration_sec?: number;
-  high_replication?: boolean;
-  audio_quality?: string;
-  approx_duration_ms: number;
-  audio_sample_rate?: number;
-  audio_channels?: number;
-  loudness_db?: number;
-  signature_cipher?: string;
-  is_drc?: boolean;
-  drm_track_type?: string;
-  distinct_params?: string;
-  track_absolute_loudness_lkfs?: number;
-  mime_type: string;
-  is_type_otf: boolean;
-  init_range?: {
-    start: number;
-    end: number;
-  };
-  index_range?: {
-    start: number;
-    end: number;
-  };
-  cipher?: string;
-  audio_track?: {
-    audio_is_default: boolean;
-    display_name: string;
-    id: string;
-  };
-  has_audio: boolean;
-  has_video: boolean;
-  has_text: boolean;
-  language?: string | null;
-  is_dubbed?: boolean;
-  is_descriptive?: boolean;
-  is_secondary?: boolean;
-  is_original?: boolean;
-  color_info?: {
-    primaries?: string;
-    transfer_characteristics?: string;
-    matrix_coefficients?: string;
-  };
-  caption_track?: {
-    display_name: string;
-    vss_id: string;
-    language_code: string;
-    kind?: 'asr' | 'frc';
-    id: string;
-  };
+export type Range = {
+  start: number;
+  end: number;
+};
+
+export type ColorInfo = {
+  primaries?: string;
+  transfer_characteristics?: string;
+  matrix_coefficients?: string;
+};
+
+export type AudioTrack = {
+  audio_is_default: boolean;
+  display_name: string;
+  id: string;
+};
+
+export type CaptionTrack = {
+  display_name: string;
+  vss_id: string;
+  language_code: string;
+  kind?: 'asr' | 'frc';
+  id: string;
+};
+
+export default class Format {
+  readonly #this_response_nsig_cache?: Map<string, string>;
+
+  public itag: number;
+  public url?: string;
+  public width?: number;
+  public height?: number;
+  public last_modified: Date;
+  public last_modified_ms: string;
+  public content_length?: number;
+  public quality?: string;
+  public xtags?: string;
+  public drm_families?: string[];
+  public fps?: number;
+  public quality_label?: string;
+  public projection_type?: ProjectionType;
+  public average_bitrate?: number;
+  public bitrate: number;
+  public spatial_audio_type?: SpatialAudioType;
+  public target_duration_dec?: number;
+  public fair_play_key_uri?: string;
+  public stereo_layout?: StereoLayout;
+  public max_dvr_duration_sec?: number;
+  public high_replication?: boolean;
+  public audio_quality?: string;
+  public approx_duration_ms: number;
+  public audio_sample_rate?: number;
+  public audio_channels?: number;
+  public loudness_db?: number;
+  public signature_cipher?: string;
+  public is_drc?: boolean;
+  public drm_track_type?: string;
+  public distinct_params?: string;
+  public track_absolute_loudness_lkfs?: number;
+  public mime_type: string;
+  public is_type_otf: boolean;
+  public init_range?: Range;
+  public index_range?: Range;
+  public cipher?: string;
+  public audio_track?: AudioTrack;
+  public has_audio: boolean;
+  public has_video: boolean;
+  public has_text: boolean;
+  public language?: string | null;
+  public is_dubbed?: boolean;
+  public is_auto_dubbed?: boolean;
+  public is_descriptive?: boolean;
+  public is_secondary?: boolean;
+  public is_original?: boolean;
+  public color_info?: ColorInfo;
+  public caption_track?: CaptionTrack;
 
   constructor(data: RawNode, this_response_nsig_cache?: Map<string, string>) {
-    if (this_response_nsig_cache) {
+    if (this_response_nsig_cache)
       this.#this_response_nsig_cache = this_response_nsig_cache;
-    }
 
     this.itag = data.itag;
     this.mime_type = data.mimeType;
@@ -217,7 +225,8 @@ export default class Format {
         this.is_dubbed = audio_content === 'dubbed';
         this.is_descriptive = audio_content === 'descriptive';
         this.is_secondary = audio_content === 'secondary';
-        this.is_original = audio_content === 'original' || (!this.is_dubbed && !this.is_descriptive && !this.is_secondary && !this.is_drc);
+        this.is_auto_dubbed = audio_content === 'dubbed-auto';
+        this.is_original = audio_content === 'original' || (!this.is_dubbed && !this.is_descriptive && !this.is_secondary && !this.is_auto_dubbed && !this.is_drc);
       }
 
       // Some text tracks don't have xtags while others do
@@ -228,11 +237,13 @@ export default class Format {
   }
 
   /**
-   * Deciphers the streaming url of the format.
-   * @returns Deciphered URL.
+   * Deciphers the URL using the provided player instance.
+   * @param player - An optional instance of the Player class used to decipher the URL.
+   * @returns The deciphered URL as a string. If no player is provided, returns the original URL or an empty string.
    */
-  decipher(player: Player | undefined): Promise<string> {
-    if (!player) throw new InnertubeError('Cannot decipher format, this session appears to have no valid player.');
+  async decipher(player?: Player): Promise<string> {
+    if (!player)
+      return this.url || '';
     return player.decipher(this.url, this.signature_cipher, this.cipher, this.#this_response_nsig_cache);
   }
 }

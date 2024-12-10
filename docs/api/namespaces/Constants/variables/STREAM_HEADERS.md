@@ -24,4 +24,4 @@
 
 ## Defined in
 
-[src/utils/Constants.ts:82](https://github.com/LuanRT/YouTube.js/blob/eb21af33db708f0355f4fb15881f5d4fabc7b06c/src/utils/Constants.ts#L82)
+[src/utils/Constants.ts:96](https://github.com/LuanRT/YouTube.js/blob/4729016fb98e7045ee4043857be7eef780c01e35/src/utils/Constants.ts#L96)

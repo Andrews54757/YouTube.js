@@ -1,13 +1,6 @@
 import Session from './core/Session.js';
 
 import {
-  BrowseEndpoint,
-  NextEndpoint,
-  PlayerEndpoint,
-  Reel
-} from './core/endpoints/index.js';
-
-import {
   Playlist,
   VideoInfo
 } from './parser/youtube/index.js';
@@ -16,28 +9,28 @@ import { ShortFormVideoInfo } from './parser/ytshorts/index.js';
 
 import NavigationEndpoint from './parser/classes/NavigationEndpoint.js';
 
-import * as Constants from './utils/Constants.js';
-import { InnertubeError, generateRandomString, throwIfMissing, u8ToBase64 } from './utils/Utils.js';
+import { generateRandomString, InnertubeError, throwIfMissing, u8ToBase64 } from './utils/Utils.js';
 
 import type { ApiResponse } from './core/Actions.js';
-import type { InnerTubeConfig, InnerTubeClient, INextRequest } from './types/index.js';
-import type { IParsedResponse } from './parser/types/index.js';
-import type { DownloadOptions, FormatOptions } from './types/FormatUtils.js';
+import type { DownloadOptions, FormatOptions, InnerTubeClient, InnerTubeConfig } from './types/index.js';
+import type { IParsedResponse } from './parser/index.js';
 import type Format from './parser/classes/misc/Format.js';
 
 import {
-  SearchFilter_SortBy,
-  SearchFilter_Filters_UploadDate,
-  SearchFilter_Filters_SearchType,
-  SearchFilter_Filters_Duration
+  ReelSequence
 } from '../protos/generated/misc/params.js';
-import { Hashtag, SearchFilter, ReelSequence, GetCommentsSectionParams } from '../protos/generated/misc/params.js';
 
 /**
  * Provides access to various services and modules in the YouTube API.
+ * 
+ * @example
+ * ```ts
+ * import { Innertube, UniversalCache } from 'youtubei.js';
+ * const innertube = await Innertube.create({ cache: new UniversalCache(true)});
+ * ```
  */
 export default class Innertube {
-  #session: Session;
+  readonly #session: Session;
 
   constructor(session: Session) {
     this.#session = session;
@@ -48,39 +41,38 @@ export default class Innertube {
   }
 
   async getInfo(target: string | NavigationEndpoint, client?: InnerTubeClient): Promise<VideoInfo> {
-    throwIfMissing({ target: target });
+    throwIfMissing({ target });
 
-    let next_payload: INextRequest;
+    const payload = {
+      videoId: target instanceof NavigationEndpoint ? target.payload?.videoId : target,
+      playlistId: target instanceof NavigationEndpoint ? target.payload?.playlistId : undefined,
+      playlistIndex: target instanceof NavigationEndpoint ? target.payload?.playlistIndex : undefined,
+      params: target instanceof NavigationEndpoint ? target.payload?.params : undefined,
+      racyCheckOk: true,
+      contentCheckOk: true
+    };
 
-    if (target instanceof NavigationEndpoint) {
-      next_payload = NextEndpoint.build({
-        video_id: target.payload?.videoId,
-        playlist_id: target.payload?.playlistId,
-        params: target.payload?.params,
-        playlist_index: target.payload?.index
-      });
-    } else if (typeof target === 'string') {
-      next_payload = NextEndpoint.build({
-        video_id: target
-      });
-    } else {
-      throw new InnertubeError('Invalid target. Expected a video id or NavigationEndpoint.', target);
-    }
+    const watch_endpoint = new NavigationEndpoint({ watchEndpoint: payload });
+    const watch_next_endpoint = new NavigationEndpoint({ watchNextEndpoint: payload });
 
-    if (!next_payload.videoId)
-      throw new InnertubeError('Video id cannot be empty', next_payload);
-
-    const player_payload = PlayerEndpoint.build({
-      video_id: next_payload.videoId,
-      playlist_id: next_payload?.playlistId,
-      client: client,
-      sts: this.#session.player?.sts,
-      po_token: this.#session.po_token
+    const watch_response = watch_endpoint.call(this.#session.actions, {
+      playbackContext: {
+        contentPlaybackContext: {
+          vis: 0,
+          splay: false,
+          lactMilliseconds: '-1',
+          signatureTimestamp: this.#session.player?.sts
+        }
+      },
+      serviceIntegrityDimensions: {
+        poToken: this.#session.po_token
+      },
+      client
     });
 
-    const player_response = this.actions.execute(PlayerEndpoint.PATH, player_payload);
-    const next_response = this.actions.execute(NextEndpoint.PATH, next_payload);
-    const response = await Promise.all([ player_response, next_response ]);
+    const watch_next_response = watch_next_endpoint.call(this.#session.actions);
+
+    const response = await Promise.all([ watch_response, watch_next_response ]);
 
     const cpn = generateRandomString(16);
 
@@ -90,27 +82,41 @@ export default class Innertube {
   async getBasicInfo(video_id: string, client?: InnerTubeClient): Promise<VideoInfo> {
     throwIfMissing({ video_id });
 
-    const response = await this.actions.execute(
-      PlayerEndpoint.PATH, PlayerEndpoint.build({
-        video_id: video_id,
-        client: client,
-        sts: this.#session.player?.sts,
-        po_token: this.#session.po_token
-      })
-    );
+    const watch_endpoint = new NavigationEndpoint({ watchEndpoint: { videoId: video_id } });
+
+    const watch_response = await watch_endpoint.call(this.#session.actions, {
+      playbackContext: {
+        contentPlaybackContext: {
+          vis: 0,
+          splay: false,
+          lactMilliseconds: '-1',
+          signatureTimestamp: this.#session.player?.sts
+        }
+      },
+      serviceIntegrityDimensions: {
+        poToken: this.#session.po_token
+      },
+      client
+    });
 
     const cpn = generateRandomString(16);
 
-    return new VideoInfo([ response ], this.actions, cpn);
+    return new VideoInfo([ watch_response ], this.actions, cpn);
   }
 
   async getShortsVideoInfo(video_id: string, client?: InnerTubeClient): Promise<ShortFormVideoInfo> {
     throwIfMissing({ video_id });
 
-    const watch_response = this.actions.execute(
-      Reel.ReelItemWatchEndpoint.PATH, Reel.ReelItemWatchEndpoint.build({ video_id, client })
-    );
+    const reel_watch_endpoint = new NavigationEndpoint({
+      reelWatchEndpoint: {
+        disablePlayerResponse: false,
+        params: 'CAUwAg%3D%3D',
+        videoId: video_id
+      }
+    });
 
+    const reel_watch_response = reel_watch_endpoint.call(this.#session.actions, { client });
+    
     const writer = ReelSequence.encode({
       shortId: video_id,
       params: {
@@ -122,13 +128,9 @@ export default class Innertube {
 
     const params = encodeURIComponent(u8ToBase64(writer.finish()));
 
-    const sequence_response = this.actions.execute(
-      Reel.ReelWatchSequenceEndpoint.PATH, Reel.ReelWatchSequenceEndpoint.build({
-        sequence_params: params
-      })
-    );
+    const sequence_response = this.actions.execute('/reel/reel_watch_sequence', { sequenceParams: params });
 
-    const response = await Promise.all([ watch_response, sequence_response ]);
+    const response = await Promise.all([ reel_watch_response, sequence_response ]);
 
     const cpn = generateRandomString(16);
 
@@ -141,9 +143,8 @@ export default class Innertube {
       id = `VL${id}`;
     }
 
-    const response = await this.actions.execute(
-      BrowseEndpoint.PATH, BrowseEndpoint.build({ browse_id: id })
-    );
+    const browse_endpoint = new NavigationEndpoint({ browseEndpoint: { browseId: id } });
+    const response = await browse_endpoint.call(this.#session.actions);
 
     return new Playlist(this.actions, response);
   }
@@ -177,9 +178,19 @@ export default class Innertube {
   }
 
   /**
+   * Resolves the given URL.
+   */
+  async resolveURL(url: string): Promise<NavigationEndpoint> {
+    const response = await this.actions.execute('/navigation/resolve_url', { url, parse: true });
+
+    if (!response.endpoint)
+      throw new InnertubeError('Failed to resolve URL. Expected a NavigationEndpoint but got undefined', response);
+
+    return response.endpoint;
+  }
+
+  /**
    * Utility method to call an endpoint without having to use {@link Actions}.
-   * @param endpoint -The endpoint to call.
-   * @param args - Call arguments.
    */
   call<T extends IParsedResponse>(endpoint: NavigationEndpoint, args: { [key: string]: any; parse: true }): Promise<T>;
   call(endpoint: NavigationEndpoint, args?: { [key: string]: any; parse?: false }): Promise<ApiResponse>;

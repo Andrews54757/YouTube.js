@@ -2,10 +2,11 @@
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
 import sha1Hash from './polyfills/web-crypto.js';
-import Log from '../utils/Log.js';
+import * as Log from '../utils/Log.js';
+
+const CACHE_TAG = 'Cache';
 
 class Cache implements ICache {
-  #TAG = 'Cache';
   #persistent_directory: string;
   #persistent: boolean;
 
@@ -21,7 +22,7 @@ class Cache implements ICache {
   #getBrowserDB() {
     const indexedDB: IDBFactory = Reflect.get(globalThis, 'indexedDB') || Reflect.get(globalThis, 'webkitIndexedDB') || Reflect.get(globalThis, 'mozIndexedDB') || Reflect.get(globalThis, 'msIndexedDB');
 
-    if (!indexedDB) return Log.warn(this.#TAG, 'IndexedDB is not supported. No cache will be used.');
+    if (!indexedDB) return Log.warn(CACHE_TAG, 'IndexedDB is not supported. No cache will be used.');
 
     return new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open('youtubei.js', 1);
