@@ -71,9 +71,12 @@ export default class Player {
     const nsig_sc = this.extractNSigSourceCode(player_js);
 
     Log.info(TAG, `Got signature timestamp (${sig_timestamp}) and algorithms needed to decipher signatures.`);
-
+    Log.info(TAG, sig_sc);
+    Log.info(TAG, nsig_sc);
     const player = await Player.fromSource(player_id, sig_timestamp, evaluator, cache, sig_sc, nsig_sc);
     player.po_token = po_token;
+
+    Log.info(TAG, `Got ptoken (${po_token})`);
 
     return player;
   }
@@ -257,7 +260,7 @@ export default class Player {
       nsig_function = findFunction(data, { includes: '1969' });
     
     if (nsig_function)
-      return `${nsig_function.result} ${nsig_function.name}(nsig);`;
+      return `${nsig_function.result.replace(/if\(typeof [a-zA-Z0-9]*==="undefined"\)return [a-zA-Z0-9]*;/, '')} ${nsig_function.name}(nsig);`;
   }
 
   get url(): string {
