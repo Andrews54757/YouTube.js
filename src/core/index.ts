@@ -7,6 +7,4 @@ export * from './Actions.js';
 export { default as Player } from './Player.js';
 export * from './Player.js';
 
-export { default as OAuth2 } from './OAuth2.js';
-export * from './OAuth2.js';
 export * as Mixins from './mixins/index.js';

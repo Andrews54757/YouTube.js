@@ -227,8 +227,7 @@ export default class MediaInfo {
 
     return await this.#actions.stats(url, {
       client_name,
-      client_version,
-      visitor_data: options?.visitor_data
+      client_version
     }, url_params);
   }
 

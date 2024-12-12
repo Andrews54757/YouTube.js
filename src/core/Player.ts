@@ -222,7 +222,7 @@ export default class Player {
     new Uint8Array(buffer).set(sig_buf, 12);
     new Uint8Array(buffer).set(nsig_buf, 12 + sig_buf.byteLength);
 
-    await cache.set(this.player_id, new Uint8Array(buffer));
+    await cache.set(this.player_id, buffer);
   }
 
   static extractSigTimestamp(data: string): number {

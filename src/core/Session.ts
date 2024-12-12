@@ -472,7 +472,7 @@ export default class Session extends EventEmitter {
     new DataView(buffer).setUint32(0, compressed_session_data.byteLength, true); // (Luan) XX: Leave this here for debugging purposes
     new Uint8Array(buffer).set(compressed_session_data, 4);
 
-    await cache.set('innertube_session_data', new Uint8Array(buffer));
+    await cache.set('innertube_session_data', buffer);
   }
 
   static async #getSessionData(options: SessionArgs, fetch: FetchFunction = Platform.shim.fetch): Promise<SWSessionData> {
