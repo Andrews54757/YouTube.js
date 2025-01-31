@@ -123,6 +123,11 @@ export default class Player {
 
         Log.info(TAG, `Transformed n signature from ${n} to ${nsig}.`);
 
+        if (n === nsig) {
+          Log.info(TAG, this.nsig_sc);
+          Log.warn(TAG, 'Nsig was not transformed. This is likely a sign that the player has been updated.');
+        }
+
         if (typeof nsig !== 'string')
           throw new PlayerError('Failed to decipher nsig');
 
@@ -261,7 +266,7 @@ export default class Player {
       nsig_function = findFunction(data, { includes: '1969' });
     
     if (nsig_function)
-      return `${nsig_function.result.replace(/if\(typeof [a-zA-Z0-9]*==="undefined"\)return [a-zA-Z0-9]*;/, '')} ${nsig_function.name}(nsig);`;
+      return `${nsig_function.result.replace(/if\(typeof [a-zA-Z0-9$_]*==="undefined"\)return [a-zA-Z0-9$_]*;/, '')} ${nsig_function.name}(nsig);`;
   }
 
   get url(): string {
