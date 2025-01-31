@@ -19,13 +19,10 @@ import type {
   InnerTubeClient,
   InnerTubeConfig
 } from './types/index.js';
-import type { IBrowseResponse, IParsedResponse } from './parser/index.js';
+import type { IParsedResponse } from './parser/index.js';
 import type Format from './parser/classes/misc/Format.js';
 
 import {
-  CommunityPostCommentsParam,
-  CommunityPostCommentsParamContainer,
-  CommunityPostParams,
   ReelSequence
 } from '../protos/generated/misc/params.js';
 

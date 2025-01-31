@@ -216,7 +216,7 @@ export default class MediaInfo {
       rt: 0
     };
 
-    const url = playback_url.replace('https://s.', replacement);
+    const url = this.#playback_tracking.videostats_playback_url.replace('https://s.', replacement);
 
     return await this.#actions.stats(url, {
       client_name,

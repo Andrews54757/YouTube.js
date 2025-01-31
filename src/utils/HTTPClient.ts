@@ -2,9 +2,7 @@ import * as Constants from './Constants.js';
 
 import {
   Platform,
-  generateSidAuth,
-  InnertubeError,
-  getCookie
+  InnertubeError
 } from './Utils.js';
 
 import type { Context, Session } from '../core/index.js';
