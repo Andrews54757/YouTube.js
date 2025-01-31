@@ -12,17 +12,26 @@ import NavigationEndpoint from './parser/classes/NavigationEndpoint.js';
 import { generateRandomString, InnertubeError, throwIfMissing, u8ToBase64 } from './utils/Utils.js';
 
 import type { ApiResponse } from './core/Actions.js';
-import type { DownloadOptions, FormatOptions, InnerTubeClient, InnerTubeConfig } from './types/index.js';
-import type { IParsedResponse } from './parser/index.js';
+import type {
+  DownloadOptions,
+  EngagementType,
+  FormatOptions,
+  InnerTubeClient,
+  InnerTubeConfig
+} from './types/index.js';
+import type { IBrowseResponse, IParsedResponse } from './parser/index.js';
 import type Format from './parser/classes/misc/Format.js';
 
 import {
+  CommunityPostCommentsParam,
+  CommunityPostCommentsParamContainer,
+  CommunityPostParams,
   ReelSequence
 } from '../protos/generated/misc/params.js';
 
 /**
  * Provides access to various services and modules in the YouTube API.
- * 
+ *
  * @example
  * ```ts
  * import { Innertube, UniversalCache } from 'youtubei.js';
@@ -55,7 +64,7 @@ export default class Innertube {
     const watch_endpoint = new NavigationEndpoint({ watchEndpoint: payload });
     const watch_next_endpoint = new NavigationEndpoint({ watchNextEndpoint: payload });
 
-    const watch_response = watch_endpoint.call(this.#session.actions, {
+    const extra_payload: Record<string, any> = {
       playbackContext: {
         contentPlaybackContext: {
           vis: 0,
@@ -64,12 +73,16 @@ export default class Innertube {
           signatureTimestamp: this.#session.player?.sts
         }
       },
-      serviceIntegrityDimensions: {
-        poToken: this.#session.po_token
-      },
       client
-    });
+    };
 
+    if (this.#session.po_token) {
+      extra_payload.serviceIntegrityDimensions = {
+        poToken: this.#session.po_token
+      };
+    }
+
+    const watch_response = watch_endpoint.call(this.#session.actions, extra_payload);
     const watch_next_response = watch_next_endpoint.call(this.#session.actions);
 
     const response = await Promise.all([ watch_response, watch_next_response ]);
@@ -84,7 +97,7 @@ export default class Innertube {
 
     const watch_endpoint = new NavigationEndpoint({ watchEndpoint: { videoId: video_id } });
 
-    const watch_response = await watch_endpoint.call(this.#session.actions, {
+    const extra_payload: Record<string, any> = {
       playbackContext: {
         contentPlaybackContext: {
           vis: 0,
@@ -93,11 +106,16 @@ export default class Innertube {
           signatureTimestamp: this.#session.player?.sts
         }
       },
-      serviceIntegrityDimensions: {
-        poToken: this.#session.po_token
-      },
       client
-    });
+    };
+
+    if (this.#session.po_token) {
+      extra_payload.serviceIntegrityDimensions = {
+        poToken: this.#session.po_token
+      };
+    }
+    
+    const watch_response = await watch_endpoint.call(this.#session.actions, extra_payload);
 
     const cpn = generateRandomString(16);
 
@@ -116,7 +134,7 @@ export default class Innertube {
     });
 
     const reel_watch_response = reel_watch_endpoint.call(this.#session.actions, { client });
-    
+
     const writer = ReelSequence.encode({
       shortId: video_id,
       params: {
@@ -187,6 +205,20 @@ export default class Innertube {
       throw new InnertubeError('Failed to resolve URL. Expected a NavigationEndpoint but got undefined', response);
 
     return response.endpoint;
+  }
+
+  /**
+   * Fetches an attestation challenge.
+   */
+  async getAttestationChallenge(engagement_type: EngagementType, ids?: Record<string, any>[]) {
+    const payload: Record<string, any> = {
+      engagementType: engagement_type
+    };
+    
+    if (ids)
+      payload.ids = ids;
+    
+    return this.actions.execute('/att/get', { parse: true, ...payload });
   }
 
   /**

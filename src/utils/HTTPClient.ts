@@ -2,8 +2,9 @@ import * as Constants from './Constants.js';
 
 import {
   Platform,
-  getRandomUserAgent,
-  InnertubeError
+  generateSidAuth,
+  InnertubeError,
+  getCookie
 } from './Utils.js';
 
 import type { Context, Session } from '../core/index.js';
@@ -58,16 +59,14 @@ export default class HTTPClient {
     request_headers.set('X-Goog-Visitor-Id', options?.visitor_data || this.#session.context.client.visitorData || '');
     request_headers.set('X-Youtube-Client-Version', this.#session.context.client.clientVersion || '');
 
-    const client_constant = Object.values(Constants.CLIENTS).find((client) => {
-      return client.NAME === this.#session.context.client.clientName;
-    });
+    const client_name_id = Constants.CLIENT_NAME_IDS[this.#session.context.client.clientName as keyof typeof Constants.CLIENT_NAME_IDS];
 
-    if (client_constant) {
-      request_headers.set('X-Youtube-Client-Name', client_constant.NAME_ID);
+    if (client_name_id) {
+      request_headers.set('X-Youtube-Client-Name', client_name_id);
     }
 
     if (Platform.shim.server) {
-      request_headers.set('User-Agent', getRandomUserAgent('desktop'));
+      request_headers.set('User-Agent', this.#session.user_agent || '');
       request_headers.set('Origin', request_url.origin);
     }
 
@@ -95,12 +94,10 @@ export default class HTTPClient {
       this.#adjustContext(n_body.context, n_body.client);
       request_headers.set('X-Youtube-Client-Version', n_body.context.client.clientVersion);
 
-      const client_constant = Object.values(Constants.CLIENTS).find((client) => {
-        return client.NAME === n_body.context.client.clientName;
-      });
+      const client_name_id = Constants.CLIENT_NAME_IDS[n_body.context.client.clientName as keyof typeof Constants.CLIENT_NAME_IDS];
 
-      if (client_constant) {
-        request_headers.set('X-Youtube-Client-Name', client_constant.NAME_ID);
+      if (client_name_id) {
+        request_headers.set('X-Youtube-Client-Name', client_name_id);
       }
 
       delete n_body.client;
