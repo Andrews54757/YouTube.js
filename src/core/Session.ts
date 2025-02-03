@@ -265,6 +265,23 @@ export default class Session extends EventEmitter {
   }
 
   static async create(options: SessionOptions) {
+    const { context, api_key, api_version, account_index } = await Session.getSessionData(
+      options.lang,
+      options.location,
+      options.account_index,
+      options.visitor_data,
+      options.user_agent,
+      options.enable_safety_mode,
+      options.generate_session_locally,
+      options.device_category,
+      options.client_type,
+      options.timezone,
+      options.fetch,
+      options.on_behalf_of_user,
+      options.cache,
+      options.enable_session_cache
+    );
+
     const runnerLocation = options.runner_location;
     if (options.client_type === ClientType.WEB) {
       const tokens = localStorage.getItem('yt_tkn');
@@ -282,9 +299,9 @@ export default class Session extends EventEmitter {
         }
       }
 
-      if (!poToken || !visitorData || !ttl || !creationDate || creationDate + ttl * 1000 < Date.now()) {
+      if (!poToken || !visitorData || visitorData !== context.client.visitorData || !ttl || !creationDate || creationDate + ttl * 1000 < Date.now()) {
         try {
-          const pot = await BGUtils.getPot(options.fetch, runnerLocation);
+          const pot = await BGUtils.getPot(options.fetch, runnerLocation, context.client.visitorData);
           poToken = pot.pot;
           visitorData = pot.vd;
           ttl = pot.ttl;
@@ -298,7 +315,6 @@ export default class Session extends EventEmitter {
 
       if (poToken) {
         options.po_token = poToken;
-        options.visitor_data = visitorData;
       }
     }
 
@@ -323,24 +339,6 @@ export default class Session extends EventEmitter {
         console.error(e);
       }
     };
-
-    const { context, api_key, api_version, account_index } = await Session.getSessionData(
-      options.lang,
-      options.location,
-      options.account_index,
-      options.visitor_data,
-      options.user_agent,
-      options.enable_safety_mode,
-      options.generate_session_locally,
-      options.device_category,
-      options.client_type,
-      options.timezone,
-      options.fetch,
-      options.on_behalf_of_user,
-      options.cache,
-      options.enable_session_cache,
-      options.po_token
-    );
 
     return new Session(
       context, api_key, api_version, account_index,
@@ -407,10 +405,9 @@ export default class Session extends EventEmitter {
     fetch: FetchFunction = Platform.shim.fetch,
     on_behalf_of_user?: string,
     cache?: ICache,
-    enable_session_cache = true,
-    po_token?: string
+    enable_session_cache = true
   ) {
-    const session_args = { lang, location, time_zone: tz, user_agent, device_category, client_name, enable_safety_mode, visitor_data, on_behalf_of_user, po_token };
+    const session_args = { lang, location, time_zone: tz, user_agent, device_category, client_name, enable_safety_mode, visitor_data, on_behalf_of_user };
 
     let session_data: SessionData | undefined;
 
