@@ -21,6 +21,7 @@ export { default as ActiveAccountHeader } from './classes/ActiveAccountHeader.js
 export { default as AddToPlaylist } from './classes/AddToPlaylist.js';
 export { default as Alert } from './classes/Alert.js';
 export { default as AlertWithButton } from './classes/AlertWithButton.js';
+export { default as AnimatedThumbnailOverlayView } from './classes/AnimatedThumbnailOverlayView.js';
 export { default as AttributionView } from './classes/AttributionView.js';
 export { default as AudioOnlyPlayability } from './classes/AudioOnlyPlayability.js';
 export { default as AutomixPreviewVideo } from './classes/AutomixPreviewVideo.js';
@@ -83,6 +84,7 @@ export { default as ContinuationCommand } from './classes/commands/ContinuationC
 export { default as GetKidsBlocklistPickerCommand } from './classes/commands/GetKidsBlocklistPickerCommand.js';
 export { default as RunAttestationCommand } from './classes/commands/RunAttestationCommand.js';
 export { default as ShowDialogCommand } from './classes/commands/ShowDialogCommand.js';
+export { default as UpdateEngagementPanelContentCommand } from './classes/commands/UpdateEngagementPanelContentCommand.js';
 export { default as AuthorCommentBadge } from './classes/comments/AuthorCommentBadge.js';
 export { default as CommentActionButtons } from './classes/comments/CommentActionButtons.js';
 export { default as CommentDialog } from './classes/comments/CommentDialog.js';

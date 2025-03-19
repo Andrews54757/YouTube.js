@@ -31,7 +31,7 @@ export const CLIENTS = {
   },
   WEB: {
     NAME: 'WEB',
-    VERSION: '2.20241121.01.00',
+    VERSION: '2.20250222.10.00',
     API_KEY: 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8',
     API_VERSION: 'v1',
     STATIC_VISITOR_ID: '6zpwvWUNAco',
@@ -39,16 +39,16 @@ export const CLIENTS = {
   },
   MWEB: {
     NAME: 'MWEB',
-    VERSION: '2.20241205.01.00',
+    VERSION: '2.20250224.01.00',
     API_VERSION: 'v1'
   },
   WEB_KIDS: {
     NAME: 'WEB_KIDS',
-    VERSION: '2.20230111.00.00'
+    VERSION: '2.20250221.11.00'
   },
   YTMUSIC: {
     NAME: 'WEB_REMIX',
-    VERSION: '1.20211213.00.00'
+    VERSION: '1.20250219.01.00'
   },
   ANDROID: {
     NAME: 'ANDROID',
@@ -66,7 +66,7 @@ export const CLIENTS = {
   },
   TV: {
     NAME: 'TVHTML5',
-    VERSION: '7.20241016.15.00',
+    VERSION: '7.20250219.14.00',
     USER_AGENT: 'Mozilla/5.0 (ChromiumStylePlatform) Cobalt/Version'
   },
   TV_EMBEDDED: {
@@ -75,14 +75,14 @@ export const CLIENTS = {
   },
   WEB_EMBEDDED: {
     NAME: 'WEB_EMBEDDED_PLAYER',
-    VERSION: '2.20240111.09.00',
+    VERSION: '1.20250219.01.00',
     API_KEY: 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8',
     API_VERSION: 'v1',
     STATIC_VISITOR_ID: '6zpwvWUNAco'
   },
   WEB_CREATOR: {
     NAME: 'WEB_CREATOR',
-    VERSION: '1.20240918.03.00',
+    VERSION: '1.20241203.01.00',
     API_KEY: 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8',
     API_VERSION: 'v1',
     STATIC_VISITOR_ID: '6zpwvWUNAco'

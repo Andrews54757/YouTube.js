@@ -10,16 +10,17 @@ import type PlatformShim from '../types/PlatformShim.js';
 
 const TAG_ = 'Utils';
 
+let shim: PlatformShim | undefined;
+
 export class Platform {
-  static #shim: PlatformShim | undefined;
   static load(platform: PlatformShim): void {
-    Platform.#shim = platform;
+    shim = platform;
   }
   static get shim(): PlatformShim {
-    if (!Platform.#shim) {
+    if (!shim) {
       throw new Error('Platform is not loaded');
     }
-    return Platform.#shim;
+    return shim;
   }
 }
 export class InnertubeError extends Error {

@@ -173,7 +173,7 @@ export default class Innertube {
    * @param options - Format options.
    */
   async getStreamingData(video_id: string, options: FormatOptions = {}): Promise<Format> {
-    const info = await this.getBasicInfo(video_id);
+    const info = await this.getBasicInfo(video_id, options?.client);
 
     const format = info.chooseFormat(options);
     format.url = await format.decipher(this.#session.player);
