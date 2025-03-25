@@ -282,7 +282,7 @@ export type ASTLookupArgs = {
   /**
    * The abstract syntax tree of the source code.
    */
-  ast?: ReturnType<typeof Jinter.parseScript>;
+  ast?: any;
 };
 
 export type ASTLookupResult = {
@@ -292,6 +292,10 @@ export type ASTLookupResult = {
   node: Record<string, any>;
   result: string;
 };
+
+export function parseScript(source: string, options: any): any {
+  return parse(source, { ecmaVersion: 2020, ...options }) as any;
+}
 
 /**
  * Searches for a function in the given code based on specified criteria.
@@ -309,7 +313,7 @@ export type ASTLookupResult = {
 export function findFunction(source: string, args: ASTLookupArgs): ASTLookupResult | undefined {
   const { name, includes, regexp, ast } = args;
 
-  const node = parse(source, { ecmaVersion: 2020 }) as any;
+  const node = ast ? ast : parseScript(source, { ecmaVersion: 2020 });
   const stack = [ node ];
 
   for (let i = 0; i < stack.length; i++) {
@@ -372,11 +376,11 @@ export function findFunction(source: string, args: ASTLookupArgs): ASTLookupResu
  * @returns An object containing the variable's details if found, `undefined` otherwise.
  */
 export function findVariable(code: string, options: ASTLookupArgs): ASTLookupResult | undefined {
-  const ast = options.ast ? options.ast : Jinter.parseScript(code, { ecmaVersion: 'latest', ranges: true });
+  const ast = options.ast ? options.ast : parseScript(code, { ecmaVersion: 'latest', ranges: true });
 
   let found: ASTLookupResult | undefined;
 
-  function walk(node: Node): void {
+  function walk(node: any): void {
     if (found) return;
 
     if (node.type === 'VariableDeclaration') {

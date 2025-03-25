@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { Log, LZW, Constants } from '../utils/index.js';
-import { Platform, getRandomUserAgent, getStringBetweenStrings, findFunction, PlayerError } from '../utils/Utils.js';
+import type { ASTLookupResult } from '../utils/Utils.js';
+import { Platform, getRandomUserAgent, getStringBetweenStrings, findFunction, PlayerError, parseScript, findVariable } from '../utils/Utils.js';
 import type { ICache, FetchFunction } from '../types/index.js';
 
 const TAG = 'Player';
@@ -66,7 +67,7 @@ export default class Player {
 
     const player_js = await player_res.text();
 
-    const ast = Jinter.parseScript(player_js, { ecmaVersion: 'latest', ranges: true });
+    const ast = parseScript(player_js, { ecmaVersion: 'latest', ranges: true });
 
     const sig_timestamp = this.extractSigTimestamp(player_js);
     const global_variable = this.extractGlobalVariable(player_js, ast);
@@ -237,7 +238,7 @@ export default class Player {
     return parseInt(getStringBetweenStrings(data, 'signatureTimestamp:', ',') || '0');
   }
 
-  static extractGlobalVariable(data: string, ast: ReturnType<typeof Jinter.parseScript>): ASTLookupResult | undefined {
+  static extractGlobalVariable(data: string, ast: ReturnType<typeof parseScript>): ASTLookupResult | undefined {
     let variable = findVariable(data, { includes: '-_w8_', ast });
 
     // For redundancy/the above fails:
@@ -274,7 +275,7 @@ export default class Player {
     return `${global_variable?.result || ''} function descramble_sig(${var_name}) { let ${obj_name}={${functions}}; ${match[2]} } descramble_sig(sig);`;
   }
 
-  static extractNSigSourceCode(data: string, ast?: ReturnType<typeof Jinter.parseScript>, global_variable?: ASTLookupResult): string | undefined {
+  static extractNSigSourceCode(data: string, ast?: ReturnType<typeof parseScript>, global_variable?: ASTLookupResult): string | undefined {
     let nsig_function;
 
     if (global_variable) {
