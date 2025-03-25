@@ -14,7 +14,7 @@
 
 import { ProtoUtils } from '../platform/lib.js';
 import type { FetchFunction } from '../types/PlatformShim.js';
-import { Platform, Utils } from '../utils/index.js';
+import { Constants, Platform, Utils } from '../utils/index.js';
 import { SandboxedEvaluator } from './SandboxedEvaluator.js';
 
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36(KHTML, like Gecko)';
@@ -63,7 +63,7 @@ export class BGUtils {
       payload.push(interpreterHash);
     }
 
-    const response = await fetcher(BGUtils.b64ToBuf('BxMTDxLZzs4JDQ3MDwDNBg4OBgsEAA8IEs0CDgzOwxEPAs4GDg4GCwTNCA0TBBENAAvNFgAAzRXQzfYAAM7iEQQAEwQ='), {
+    const response = await fetcher(Constants.URLS.YT_IT_BASE + Constants.URLS.YT_IT_CREATE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json+protobuf',
@@ -129,11 +129,11 @@ export class BGUtils {
 
   static async getPot(fetcher: FetchFunction = Platform.shim.fetch, runnerLocation: string, vd?: string, requestToken?: string, apiKey?: string, debug = false): Promise<any> {
     if (!requestToken) {
-      requestToken = BGUtils.b64ToBuf('7tPSGc8DDwkHBvfRz/LiF9Pq4A4=');
+      requestToken = Constants.URLS.API.KEY2;
     }
 
     if (!apiKey) {
-      apiKey = BGUtils.b64ToBuf('4OgZAPIY4xjz1PbP6QfT2OXSz+8QEBMYBQMF1g/j6+Xq6+kO4A0W');
+      apiKey = Constants.URLS.API.KEY;
     }
 
     if (!vd) {
@@ -172,7 +172,7 @@ export class BGUtils {
       if (!debug) evaluator.setTimeout(null);
 
       const payload = [ requestToken, response ];
-      const response2 = await fetcher(BGUtils.b64ToBuf('BxMTDxLZzs4JDQ3MDwDNBg4OBgsEAA8IEs0CDgzOwxEPAs4GDg4GCwTNCA0TBBENAAvNFgAAzRXQzfYAAM7mBA0EEQATBOjz'), {
+      const response2 = await fetcher(Constants.URLS.YT_IT_BASE + Constants.URLS.YT_IT_GEN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json+protobuf',
