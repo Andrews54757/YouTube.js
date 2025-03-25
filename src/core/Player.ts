@@ -257,6 +257,11 @@ export default class Player {
     return variable;
   }
 
+  static fixSource(data: string): string {
+    data = data.replace(/if\(typeof [a-zA-Z0-9_$]*===.*?\)return [a-zA-Z0-9_$]*;/g, '');
+    return data;
+  }
+
   static extractSigSourceCode(data: string, global_variable?: ASTLookupResult): string | undefined {
     const match = data.match(/function\(([A-Za-z_0-9]+)\)\{([A-Za-z_0-9]+=[A-Za-z_0-9]+\.split\((?:[^)]+)\)(.+?)\.join\((?:[^)]+)\))\}/);
 
@@ -272,7 +277,7 @@ export default class Player {
     if (!functions || !var_name)
       Log.warn(TAG, 'Failed to extract signature decipher algorithm.');
 
-    return `${global_variable?.result || ''} function descramble_sig(${var_name}) { let ${obj_name}={${functions}}; ${match[2]} } descramble_sig(sig);`;
+    return `function sig_fn(sig) {${global_variable?.result || ''} function descramble_sig(${var_name}) { let ${obj_name}={${functions}}; ${match[2]} } return descramble_sig(sig);}`;
   }
 
   static extractNSigSourceCode(data: string, ast?: ReturnType<typeof parseScript>, global_variable?: ASTLookupResult): string | undefined {
@@ -289,7 +294,7 @@ export default class Player {
         nsig_function = findFunction(data, { includes: '.reverse().forEach(function', ast });
       
       if (nsig_function)
-        return `${global_variable.result} var ${nsig_function.result} ${nsig_function.name}(nsig);`;
+        return `function nsig_fn(nsig) {${global_variable.result} var ${this.fixSource(nsig_function.result)} return ${nsig_function.name}(nsig);}`;
     }
 
     // This is the suffix of the error tag.
@@ -304,7 +309,7 @@ export default class Player {
       nsig_function = findFunction(data, { includes: 'enhanced_except', ast });
     
     if (nsig_function)
-      return `let ${nsig_function.result} ${nsig_function.name}(nsig);`;
+      return `function nsig_fn(nsig) {let ${this.fixSource(nsig_function.result)} return ${nsig_function.name}(nsig);}`;
   }
 
   get url(): string {
