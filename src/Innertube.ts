@@ -61,32 +61,34 @@ export default class Innertube {
     const watch_endpoint = new NavigationEndpoint({ watchEndpoint: payload });
     const watch_next_endpoint = new NavigationEndpoint({ watchNextEndpoint: payload });
 
+    const session = this.#session;
+
     const extra_payload: Record<string, any> = {
       playbackContext: {
         contentPlaybackContext: {
           vis: 0,
           splay: false,
           lactMilliseconds: '-1',
-          signatureTimestamp: this.#session.player?.sts
+          signatureTimestamp: session.player?.sts
         }
       },
       client
     };
 
-    if (this.#session.po_token) {
+    if (session.po_token) {
       extra_payload.serviceIntegrityDimensions = {
-        poToken: this.#session.po_token
+        poToken: session.po_token
       };
     }
 
-    const watch_response = watch_endpoint.call(this.#session.actions, extra_payload);
-    const watch_next_response = watch_next_endpoint.call(this.#session.actions);
+    const watch_response = watch_endpoint.call(session.actions, extra_payload);
+    const watch_next_response = watch_next_endpoint.call(session.actions);
 
     const response = await Promise.all([ watch_response, watch_next_response ]);
 
     const cpn = generateRandomString(16);
 
-    return new VideoInfo(response, this.actions, cpn);
+    return new VideoInfo(response, session.actions, cpn);
   }
 
   async getBasicInfo(video_id: string, client?: InnerTubeClient): Promise<VideoInfo> {
@@ -94,29 +96,31 @@ export default class Innertube {
 
     const watch_endpoint = new NavigationEndpoint({ watchEndpoint: { videoId: video_id } });
 
+    const session = this.#session;
+
     const extra_payload: Record<string, any> = {
       playbackContext: {
         contentPlaybackContext: {
           vis: 0,
           splay: false,
           lactMilliseconds: '-1',
-          signatureTimestamp: this.#session.player?.sts
+          signatureTimestamp: session.player?.sts
         }
       },
       client
     };
 
-    if (this.#session.po_token) {
+    if (session.po_token) {
       extra_payload.serviceIntegrityDimensions = {
-        poToken: this.#session.po_token
+        poToken: session.po_token
       };
     }
     
-    const watch_response = await watch_endpoint.call(this.#session.actions, extra_payload);
+    const watch_response = await watch_endpoint.call(session.actions, extra_payload);
 
     const cpn = generateRandomString(16);
 
-    return new VideoInfo([ watch_response ], this.actions, cpn);
+    return new VideoInfo([ watch_response ], session.actions, cpn);
   }
 
   async getShortsVideoInfo(video_id: string, client?: InnerTubeClient): Promise<ShortFormVideoInfo> {
@@ -130,7 +134,9 @@ export default class Innertube {
       }
     });
 
-    const reel_watch_response = reel_watch_endpoint.call(this.#session.actions, { client });
+    const actions = this.#session.actions;
+
+    const reel_watch_response = reel_watch_endpoint.call(actions, { client });
 
     const writer = ReelSequence.encode({
       shortId: video_id,
@@ -143,13 +149,13 @@ export default class Innertube {
 
     const params = encodeURIComponent(u8ToBase64(writer.finish()));
 
-    const sequence_response = this.actions.execute('/reel/reel_watch_sequence', { sequenceParams: params });
+    const sequence_response = actions.execute('/reel/reel_watch_sequence', { sequenceParams: params });
 
     const response = await Promise.all([ reel_watch_response, sequence_response ]);
 
     const cpn = generateRandomString(16);
 
-    return new ShortFormVideoInfo([ response[0] ], this.actions, cpn, response[1]);
+    return new ShortFormVideoInfo([ response[0] ], actions, cpn, response[1]);
   }
   async getPlaylist(id: string): Promise<Playlist> {
     throwIfMissing({ id });

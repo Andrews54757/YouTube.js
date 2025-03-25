@@ -29,10 +29,11 @@ export default class HTTPClient {
 
   async fetch(
     input: URL | Request | string,
-    init?: RequestInit & HTTPClientInit,
-    options: { visitor_data?: string } = {}
+    init?: RequestInit & HTTPClientInit
   ): Promise<Response> {
-    const innertube_url = Constants.URLS.API.PRODUCTION_1 + this.#session.api_version;
+    const session = this.#session;
+
+    const innertube_url = Constants.URLS.API.PRODUCTION_1 + session.api_version;
     const baseURL = init?.baseURL || innertube_url;
 
     const request_url =
@@ -54,17 +55,17 @@ export default class HTTPClient {
 
     request_headers.set('Accept', '*/*');
     request_headers.set('Accept-Language', '*');
-    request_headers.set('X-Goog-Visitor-Id', options?.visitor_data || this.#session.context.client.visitorData || '');
-    request_headers.set('X-Youtube-Client-Version', this.#session.context.client.clientVersion || '');
+    request_headers.set('X-Goog-Visitor-Id', session.context.client.visitorData || '');
+    request_headers.set('X-Youtube-Client-Version', session.context.client.clientVersion || '');
 
-    const client_name_id = Constants.CLIENT_NAME_IDS[this.#session.context.client.clientName as keyof typeof Constants.CLIENT_NAME_IDS];
+    const client_name_id = Constants.CLIENT_NAME_IDS[session.context.client.clientName as keyof typeof Constants.CLIENT_NAME_IDS];
 
     if (client_name_id) {
       request_headers.set('X-Youtube-Client-Name', client_name_id);
     }
 
     if (Platform.shim.server) {
-      request_headers.set('User-Agent', this.#session.user_agent || '');
+      request_headers.set('User-Agent', session.user_agent || '');
       request_headers.set('Origin', request_url.origin);
     }
 
@@ -86,7 +87,7 @@ export default class HTTPClient {
       const n_body = {
         ...json,
         // Deep copy since we're going to be modifying it
-        context: JSON.parse(JSON.stringify(this.#session.context)) as Context
+        context: JSON.parse(JSON.stringify(session.context)) as Context
       };
 
       this.#adjustContext(n_body.context, n_body.client);
@@ -168,7 +169,8 @@ export default class HTTPClient {
         ctx.client.clientVersion = Constants.CLIENTS.IOS.VERSION;
         ctx.client.clientName = Constants.CLIENTS.IOS.NAME;
         ctx.client.platform = 'MOBILE';
-        ctx.client.osName = 'iOS';
+        ctx.client.osName = Constants.CLIENTS.IOS.NAME;
+        ctx.client.osVersion = Constants.CLIENTS.IOS.OS_VERSION;
         delete ctx.client.browserName;
         delete ctx.client.browserVersion;
         break;
