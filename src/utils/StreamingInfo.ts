@@ -315,13 +315,20 @@ async function getSegmentInfo(
   actions?: Actions,
   player?: Player,
   cpn?: string,
-  shared_post_live_dvr_info?: SharedPostLiveDvrInfo
+  shared_post_live_dvr_info?: SharedPostLiveDvrInfo,
+  is_sabr?: boolean
 ) {
-  const url = new URL(await format.decipher(player));
-  url.searchParams.set('cpn', cpn || '');
-
-  const transformed_url = url_transformer(url).toString();
-
+  let transformed_url = '';
+  
+  if (is_sabr) {
+    const formatKey = `${format.itag || ''}:${format.xtags || ''}`;
+    transformed_url = `sabr://${format.has_video ? 'video' : 'audio'}?key=${formatKey}`;
+  } else {
+    const url = new URL(await format.decipher(player));
+    url.searchParams.set('cpn', cpn || '');
+    transformed_url = url_transformer(url).toString();
+  }
+  
   if (format.is_type_otf) {
     if (!actions)
       throw new InnertubeError('Unable to get segment durations for this OTF stream without an Actions instance', { format });
@@ -392,11 +399,9 @@ async function getAudioRepresentation(
   actions?: Actions,
   player?: Player,
   cpn?: string,
-  shared_post_live_dvr_info?: SharedPostLiveDvrInfo
+  shared_post_live_dvr_info?: SharedPostLiveDvrInfo,
+  is_sabr?: boolean
 ) {
-  const url = new URL(await format.decipher(player));
-  url.searchParams.set('cpn', cpn || '');
-
   const uid_parts = [ format.itag.toString() ];
 
   if (format.audio_track) {
@@ -413,7 +418,7 @@ async function getAudioRepresentation(
     codecs: !hoisted.includes('codecs') ? getStringBetweenStrings(format.mime_type, 'codecs="', '"') : undefined,
     audio_sample_rate: !hoisted.includes('audio_sample_rate') ? format.audio_sample_rate : undefined,
     channels: !hoisted.includes('AudioChannelConfiguration') ? format.audio_channels || 2 : undefined,
-    segment_info: await getSegmentInfo(format, url_transformer, actions, player, cpn, shared_post_live_dvr_info)
+    segment_info: await getSegmentInfo(format, url_transformer, actions, player, cpn, shared_post_live_dvr_info, is_sabr)
   };
 
   return rep;
@@ -447,7 +452,8 @@ async function getAudioSet(
   player?: Player,
   cpn?: string,
   shared_post_live_dvr_info?: SharedPostLiveDvrInfo,
-  drc_labels?: DrcLabels
+  drc_labels?: DrcLabels,
+  is_sabr?: boolean
 ) {
   const first_format = formats[0];
   const { audio_track } = first_format;
@@ -475,7 +481,7 @@ async function getAudioSet(
     track_name,
     track_roles: getTrackRoles(first_format, has_drc_streams),
     channels: hoistAudioChannelsIfPossible(formats, hoisted),
-    representations: await Promise.all(formats.map((format) => getAudioRepresentation(format, hoisted, url_transformer, actions, player, cpn, shared_post_live_dvr_info)))
+    representations: await Promise.all(formats.map((format) => getAudioRepresentation(format, hoisted, url_transformer, actions, player, cpn, shared_post_live_dvr_info, is_sabr)))
   };
 
   return set;
@@ -556,7 +562,8 @@ async function getVideoRepresentation(
   player?: Player,
   actions?: Actions,
   cpn?: string,
-  shared_post_live_dvr_info?: SharedPostLiveDvrInfo
+  shared_post_live_dvr_info?: SharedPostLiveDvrInfo,
+  is_sabr?: boolean
 ) {
   const rep: VideoRepresentation = {
     uid: format.itag.toString(),
@@ -565,7 +572,7 @@ async function getVideoRepresentation(
     height: format.height,
     codecs: !hoisted.includes('codecs') ? getStringBetweenStrings(format.mime_type, 'codecs="', '"') : undefined,
     fps: !hoisted.includes('fps') ? format.fps : undefined,
-    segment_info: await getSegmentInfo(format, url_transformer, actions, player, cpn, shared_post_live_dvr_info)
+    segment_info: await getSegmentInfo(format, url_transformer, actions, player, cpn, shared_post_live_dvr_info, is_sabr)
   };
 
   return rep;
@@ -577,7 +584,8 @@ async function getVideoSet(
   player?: Player,
   actions?: Actions,
   cpn?: string,
-  shared_post_live_dvr_info?: SharedPostLiveDvrInfo
+  shared_post_live_dvr_info?: SharedPostLiveDvrInfo,
+  is_sabr?: boolean
 ) {
   const first_format = formats[0];
   const color_info = getColorInfo(first_format);
@@ -588,7 +596,7 @@ async function getVideoSet(
     color_info,
     codecs: hoistCodecsIfPossible(formats, hoisted),
     fps: hoistNumberAttributeIfPossible(formats, 'fps', hoisted),
-    representations: await Promise.all(formats.map((format) => getVideoRepresentation(format, url_transformer, hoisted, player, actions, cpn, shared_post_live_dvr_info)))
+    representations: await Promise.all(formats.map((format) => getVideoRepresentation(format, url_transformer, hoisted, player, actions, cpn, shared_post_live_dvr_info, is_sabr)))
   };
 
   return set;
@@ -860,9 +868,9 @@ export async function getStreamingInfo(
     };
   }
 
-  const audio_sets = await Promise.all(audio_groups.map((formats) => getAudioSet(formats, url_transformer, actions, player, cpn, shared_post_live_dvr_info, drc_labels)));
+  const audio_sets = await Promise.all(audio_groups.map((formats) => getAudioSet(formats, url_transformer, actions, player, cpn, shared_post_live_dvr_info, drc_labels, options?.is_sabr)));
 
-  const video_sets = await Promise.all(video_groups.map((formats) => getVideoSet(formats, url_transformer, player, actions, cpn, shared_post_live_dvr_info)));
+  const video_sets = await Promise.all(video_groups.map((formats) => getVideoSet(formats, url_transformer, player, actions, cpn, shared_post_live_dvr_info, options?.is_sabr)));
 
   let image_sets: ImageSet[] = [];
 
