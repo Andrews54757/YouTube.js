@@ -1,10 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import { Log, LZW, Constants } from '../utils/index.js';
-import type { ASTLookupResult } from '../utils/Utils.js';
-import { Platform, getRandomUserAgent, getStringBetweenStrings, findFunction, PlayerError, parseScript, findVariable } from '../utils/Utils.js';
-import type { ICache, FetchFunction } from '../types/index.js';
+import type { FetchFunction, ICache } from '../types/index.js';
+import { Constants, BinarySerializer, Log } from '../utils/index.js';
+import {
+  type ASTLookupResult,
+  findFunction,
+  findVariable,
+  getRandomUserAgent,
+  getStringBetweenStrings,
+  parseScript,
+  Platform,
+  PlayerError
+} from '../utils/Utils.js';
 
 const TAG = 'Player';
+
+interface SerializablePlayer {
+  player_id: string;
+  sts: number;
+  sig_sc?: string;
+  nsig_sc?: string;
+  library_version: number;
+}
 
 /**
  * Represents YouTube's player script. This is required to decipher signatures.
@@ -26,7 +42,6 @@ export default class Player {
   }
 
   static async create(cache: ICache | undefined, evaluator: Function, fetch: FetchFunction = Platform.shim.fetch, po_token?: string, player_id?: string): Promise<Player> {
-
     if (!player_id) {
       const url = new URL('/iframe_api', Constants.URLS.YT_BASE);
       const res = await fetch(url);
@@ -194,22 +209,20 @@ export default class Player {
     if (!buffer)
       return null;
 
-    const view = new DataView(buffer);
-    const version = view.getUint32(0, true);
+    try {
+      const current_library_version = parseInt(Platform.shim.info.version.split('.')[0]);
+      const player_data = BinarySerializer.deserialize<SerializablePlayer>(new Uint8Array(buffer));
 
-    if (version !== Player.LIBRARY_VERSION)
+      if (player_data.library_version !== current_library_version) {
+        Log.warn(TAG, `Cached player data is from a different library version (${player_data.library_version}). Ignoring it.`);
+        return null;
+      }
+
+      return new Player(player_data.player_id, player_data.sts, evaluator, player_data.sig_sc, player_data.nsig_sc);
+    } catch (e) {
+      Log.error(TAG, 'Failed to deserialize player data from cache:', e);
       return null;
-
-    const sig_timestamp = view.getUint32(4, true);
-
-    const sig_len = view.getUint32(8, true);
-    const sig_buf = buffer.slice(12, 12 + sig_len);
-    const nsig_buf = buffer.slice(12 + sig_len);
-
-    const sig_sc = LZW.decompress(new TextDecoder().decode(sig_buf));
-    const nsig_sc = LZW.decompress(new TextDecoder().decode(nsig_buf));
-
-    return new Player(player_id, sig_timestamp, evaluator, sig_sc, nsig_sc);
+    }
   }
 
   static async fromSource(player_id: string, sig_timestamp: number, evaluator: Function, cache?: ICache, sig_sc?: string, nsig_sc?: string): Promise<Player> {
@@ -222,20 +235,15 @@ export default class Player {
     if (!cache || !this.sig_sc || !this.nsig_sc)
       return;
 
-    const encoder = new TextEncoder();
+    const current_library_version = parseInt(Platform.shim.info.version.split('.')[0]);
 
-    const sig_buf = encoder.encode(LZW.compress(this.sig_sc));
-    const nsig_buf = encoder.encode(LZW.compress(this.nsig_sc));
-
-    const buffer = new ArrayBuffer(12 + sig_buf.byteLength + nsig_buf.byteLength);
-    const view = new DataView(buffer);
-
-    view.setUint32(0, Player.LIBRARY_VERSION, true);
-    view.setUint32(4, this.sts, true);
-    view.setUint32(8, sig_buf.byteLength, true);
-
-    new Uint8Array(buffer).set(sig_buf, 12);
-    new Uint8Array(buffer).set(nsig_buf, 12 + sig_buf.byteLength);
+    const buffer = BinarySerializer.serialize({
+      player_id: this.player_id,
+      sts: this.sts,
+      sig_sc: this.sig_sc,
+      nsig_sc: this.nsig_sc,
+      library_version: current_library_version
+    });
 
     await cache.set(this.player_id, buffer);
   }
@@ -302,29 +310,29 @@ export default class Player {
 
     if (global_variable) {
       nsig_function = findFunction(data, { includes: `new Date(${global_variable.name}`, ast });
-      
+
       // For redundancy/the above fails:
       if (!nsig_function)
         nsig_function = findFunction(data, { includes: '.push(String.fromCharCode(', ast });
-      
+
       if (!nsig_function)
         nsig_function = findFunction(data, { includes: '.reverse().forEach(function', ast });
-      
+
       if (nsig_function)
         return `function nsig_fn(nsig) {${global_variable.result} var ${this.fixSource(nsig_function.result)} return ${nsig_function.name}(nsig);}`;
     }
 
     // This is the suffix of the error tag.
     nsig_function = findFunction(data, { includes: '-_w8_', ast });
-    
+
     // Usually, only this function uses these dates in the entire script.
     if (!nsig_function)
       nsig_function = findFunction(data, { includes: '1969', ast });
-    
+
     // This used to be the prefix of the error tag (leaving it here for reference).
     if (!nsig_function)
       nsig_function = findFunction(data, { includes: 'enhanced_except', ast });
-    
+
     if (nsig_function)
       return `function nsig_fn(nsig) {let ${this.fixSource(nsig_function.result)} return ${nsig_function.name}(nsig);}`;
   }

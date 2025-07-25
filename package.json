@@ -1,6 +1,6 @@
 {
   "name": "youtubei.js",
-  "version": "14.0.0",
+  "version": "15.0.1",
   "description": "A JavaScript client for YouTube's private API, known as InnerTube.",
   "type": "module",
   "types": "./dist/src/platform/lib.d.ts",
@@ -28,11 +28,11 @@
   },
   "exports": {
     ".": {
+      "deno": "./dist/src/platform/deno.js",
       "node": {
         "import": "./dist/src/platform/node.js",
-        "require": "./bundle/node.cjs"
+        "default": "./dist/src/platform/node.js"
       },
-      "deno": "./dist/src/platform/deno.js",
       "types": "./dist/src/platform/lib.d.ts",
       "browser": "./dist/src/platform/web.js",
       "react-native": "./dist/src/platform/react-native.js",
@@ -71,7 +71,7 @@
     "Absidue (https://github.com/absidue)"
   ],
   "scripts": {
-    "test": "jest --verbose",
+    "test": "vitest run --reporter verbose",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
     "clean": "rimraf ./dist ./bundle/browser.js ./bundle/browser.min.js ./bundle/node.cjs ./bundle/cf-worker.js ./bundle/react-native.js ./deno",
@@ -84,7 +84,7 @@
     "bundle:browser": "esbuild ./dist/src/platform/web.js --banner:js=\"/* eslint-disable */\" --bundle --target=chrome70 --keep-names --format=esm --define:global=globalThis --conditions=module --outfile=./bundle/browser.js --platform=browser",
     "bundle:react-native": "esbuild ./dist/src/platform/react-native.js --bundle --target=es2020 --keep-names --format=esm --platform=neutral --define:global=globalThis --conditions=module --outfile=./bundle/react-native.js",
     "bundle:browser:prod": "npm run bundle:browser -- --outfile=./bundle/browser.min.js --minify",
-    "bundle:cf-worker": "esbuild ./dist/src/platform/cf-worker.js --banner:js=\"/* eslint-disable */\" --bundle --target=es2020 --keep-names --format=esm --define:global=globalThis --conditions=module --outfile=./bundle/cf-worker.js --platform=node",
+    "bundle:cf-workeår": "esbuild ./dist/src/platform/cf-worker.js --banner:js=\"/* eslint-disable */\" --bundle --target=es2020 --keep-names --format=esm --define:global=globalThis --conditions=module --outfile=./bundle/cf-worker.js --platform=node",
     "build:docs": "typedoc",
     "prepare": "npm run build",
     "watch": "tspc --watch"
@@ -104,8 +104,7 @@
   "dependencies": {
     "@bufbuild/protobuf": "^2.0.0",
     "jintr": "^3.3.1",
-    "tslib": "^2.5.0",
-    "undici": "^5.19.1"
+    "undici": "^6.21.3"
   },
   "overrides": {
     "typescript": "^5.0.0"
@@ -114,24 +113,22 @@
     "@eslint/js": "^9.9.0",
     "@types/estree": "^1.0.6",
     "@types/glob": "^8.1.0",
-    "@types/jest": "^28.1.7",
-    "@types/node": "^17.0.45",
+    "@types/node": "^24.0.14",
     "cpy-cli": "^4.2.0",
-    "esbuild": "^0.14.49",
+    "esbuild": "^0.25.6",
     "eslint": "^9.9.0",
     "glob": "^8.0.3",
     "globals": "^15.9.0",
-    "jest": "^29.7.0",
     "replace": "^1.2.2",
     "rimraf": "^6.0.1",
-    "ts-jest": "^29.1.4",
     "ts-patch": "^3.0.2",
     "ts-proto": "^2.2.0",
     "ts-transformer-inline-file": "^0.2.0",
     "typedoc": "^0.26.7",
     "typedoc-plugin-markdown": "^4.2.7",
     "typescript": "^5.0.0",
-    "typescript-eslint": "^8.2.0"
+    "typescript-eslint": "^8.2.0",
+    "vitest": "^3.2.4"
   },
   "bugs": {
     "url": "https://github.com/LuanRT/YouTube.js/issues"

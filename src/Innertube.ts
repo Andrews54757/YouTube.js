@@ -4,10 +4,10 @@ import {
   Playlist,
   VideoInfo
 } from './parser/youtube/index.js';
-
 import { ShortFormVideoInfo } from './parser/ytshorts/index.js';
 
 import NavigationEndpoint from './parser/classes/NavigationEndpoint.js';
+import type Format from './parser/classes/misc/Format.js';
 
 import { generateRandomString, InnertubeError, throwIfMissing, u8ToBase64 } from './utils/Utils.js';
 
@@ -16,11 +16,11 @@ import type {
   DownloadOptions,
   EngagementType,
   FormatOptions,
+  GetVideoInfoOptions,
   InnerTubeClient,
   InnerTubeConfig
 } from './types/index.js';
-import type { IParsedResponse } from './parser/index.js';
-import type Format from './parser/classes/misc/Format.js';
+import type {IParsedResponse} from './parser/index.js';
 
 import {
   ReelSequence
@@ -46,7 +46,7 @@ export default class Innertube {
     return new Innertube(await Session.create(config));
   }
 
-  async getInfo(target: string | NavigationEndpoint, client?: InnerTubeClient): Promise<VideoInfo> {
+  async getInfo(target: string | NavigationEndpoint, options?: GetVideoInfoOptions): Promise<VideoInfo> {
     throwIfMissing({ target });
 
     const payload = {
@@ -72,10 +72,14 @@ export default class Innertube {
           signatureTimestamp: session.player?.sts
         }
       },
-      client
+      client: options?.client
     };
 
-    if (session.po_token) {
+    if (options?.po_token) {
+      extra_payload.serviceIntegrityDimensions = {
+        poToken: options.po_token
+      };
+    } else if (session.po_token) {
       extra_payload.serviceIntegrityDimensions = {
         poToken: session.po_token
       };
@@ -91,7 +95,7 @@ export default class Innertube {
     return new VideoInfo(response, session.actions, cpn);
   }
 
-  async getBasicInfo(video_id: string, client?: InnerTubeClient): Promise<VideoInfo> {
+  async getBasicInfo(video_id: string, options?: GetVideoInfoOptions): Promise<VideoInfo> {
     throwIfMissing({ video_id });
 
     const watch_endpoint = new NavigationEndpoint({
@@ -113,10 +117,14 @@ export default class Innertube {
           signatureTimestamp: session.player?.sts
         }
       },
-      client
+      client: options?.client  
     };
 
-    if (session.po_token) {
+    if (options?.po_token) {
+      extra_payload.serviceIntegrityDimensions = {
+        poToken: options.po_token
+      };
+    } else if (session.po_token) {
       extra_payload.serviceIntegrityDimensions = {
         poToken: session.po_token
       };
@@ -185,7 +193,7 @@ export default class Innertube {
    * @param options - Format options.
    */
   async getStreamingData(video_id: string, options: FormatOptions = {}): Promise<Format> {
-    const info = await this.getBasicInfo(video_id, options?.client);
+    const info = await this.getBasicInfo(video_id, options);
 
     const format = info.chooseFormat(options);
     format.url = await format.decipher(this.#session.player);
@@ -200,7 +208,7 @@ export default class Innertube {
    * @param options - Download options.
    */
   async download(video_id: string, options?: DownloadOptions): Promise<ReadableStream<Uint8Array>> {
-    const info = await this.getBasicInfo(video_id, options?.client);
+    const info = await this.getBasicInfo(video_id, options);
     return info.download(options);
   }
 
