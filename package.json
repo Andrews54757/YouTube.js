@@ -75,7 +75,7 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
     "clean": "rimraf ./dist ./bundle/browser.js ./bundle/browser.min.js ./bundle/node.cjs ./bundle/cf-worker.js ./bundle/react-native.js ./deno",
-    "build": "npm run clean && npm run build:parser-map && npm run build:esm && npm run bundle:node && npm run bundle:browser && npm run bundle:browser:prod && npm run bundle:cf-worker && npm run bundle:react-native",
+    "build": "npm run clean && npm run build:parser-map && npm run build:esm && npm run bundle:node && npm run bundle:browser && npm run bundle:browser:prod",
     "build:esm": "tspc",
     "build:deno": "cpy ./src ./deno && cpy ./protos ./deno && esbuild ./src/utils/DashManifest.tsx --keep-names --format=esm --platform=neutral --target=es2020 --outfile=./deno/src/utils/DashManifest.js && cpy ./package.json ./deno && replace \".js';\" \".ts';\" ./deno -r && replace '.js\";' '.ts\";' ./deno -r && replace \"'./DashManifest.ts';\" \"'./DashManifest.js';\" ./deno -r && replace \"'jintr';\" \"'jsr:@luanrt/jintr';\" ./deno -r && replace \"@bufbuild/protobuf/wire\" \"https://esm.sh/@bufbuild/protobuf@2.0.0/wire\" ./deno -r",
     "build:proto": "rimraf ./protos/generated && node ./dev-scripts/generate-proto.mjs",

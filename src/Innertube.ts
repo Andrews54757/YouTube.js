@@ -20,7 +20,7 @@ import type {
   InnerTubeClient,
   InnerTubeConfig
 } from './types/index.js';
-import type {IParsedResponse} from './parser/index.js';
+import type { IParsedResponse } from './parser/index.js';
 
 import {
   ReelSequence
