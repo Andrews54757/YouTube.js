@@ -117,6 +117,48 @@ export class BGUtils {
     }
   }
 
+  static generateColdStartToken(identifier: string, clientState?: number): string {
+    const encodedIdentifier = new TextEncoder().encode(identifier);
+
+    if (encodedIdentifier.length > 118)
+      throw new Error('Content binding is too long.');
+
+    const timestamp = Math.floor(Date.now() / 1000);
+    const randomKeys = [ Math.floor(Math.random() * 256), Math.floor(Math.random() * 256) ];
+
+    // NOTE: The "0" value before the client state is supposed to be someVal & 0xFF.
+    // It is always 0 though, so I didn't bother investigating further.
+    const header = randomKeys.concat(
+      [
+        0, (clientState ?? 1)
+      ],
+      [
+        (timestamp >> 24) & 0xFF,
+        (timestamp >> 16) & 0xFF,
+        (timestamp >> 8) & 0xFF,
+        timestamp & 0xFF
+      ]
+    );
+
+    const packet = new Uint8Array(2 + header.length + encodedIdentifier.length);
+
+    packet[0] = 34;
+    packet[1] = header.length + encodedIdentifier.length;
+
+    packet.set(header, 2);
+    packet.set(encodedIdentifier, 2 + header.length);
+
+    const payload = packet.subarray(2);
+
+    const keyLength = randomKeys.length;
+
+    for (let i = keyLength; i < payload.length; i++) {
+      payload[i] ^= payload[i % keyLength];
+    }
+
+    return this.u8ToBase64(packet, true);
+  }
+
   static getFn1(): any {
     const fn1 = '(n){return(async()=>{const r=window[n.globalName];if(!r)throw new Error("V not found");const o={fn1:null,fn2:null,fn3:null,fn4:null};if(!r.a)throw new Error("Init failed");try{await r.a(n.challenge,(function(n,r,t,f){o.fn1=n,o.fn2=r,o.fn3=t,o.fn4=f}),!0,void 0,((...n)=>{}))}catch(n){throw new Error("Failed to load")}if(!o.fn1)throw new Error("fn1 unavailable.");let t=null;const f=[];if(await o.fn1((n=>{t=n}),[,,f]),!t)throw new Error("[BG]: No response");if(!f.length)throw new Error("No ppf");return window.ppf=f,t})()}';
     return SandboxedEvaluator.extractFnBodyAndArgs(fn1);

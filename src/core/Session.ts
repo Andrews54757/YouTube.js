@@ -303,39 +303,12 @@ export default class Session extends EventEmitter {
     );
 
     const runnerLocation = options.runner_location;
-    if (options.client_type === ClientType.WEB) {
-      const tokens = localStorage.getItem('yt_tkn');
-      let poToken;
-      let visitorData;
-      let ttl = 0;
-      let creationDate = 0;
-      if (tokens) {
-        const parsedTokens = JSON.parse(tokens);
-        if (parsedTokens.length > 0) {
-          poToken = parsedTokens[0];
-          visitorData = parsedTokens[1];
-          ttl = parsedTokens[2];
-          creationDate = parsedTokens[3];
-        }
-      }
-
-      if (!poToken || !visitorData || visitorData !== context.client.visitorData || !ttl || !creationDate || creationDate + ttl * 1000 < Date.now()) {
-        try {
-          const pot = await BGUtils.getPot(options.fetch, runnerLocation, context.client.visitorData);
-          poToken = pot.pot;
-          visitorData = pot.vd;
-          ttl = pot.ttl;
-          creationDate = Date.now();
-
-          localStorage.setItem('yt_tkn', JSON.stringify([ poToken, visitorData, ttl, creationDate ]));
-        } catch (error) {
-          Log.error(TAG, 'Failed to get PoT', error);
-        }
-      }
-
-      if (poToken) {
-        options.po_token = poToken;
-      }
+    if (options.client_type === ClientType.WEB && context.client.visitorData) {
+      options.po_token = await Session.mintPoToken(
+        runnerLocation,
+        context.client.visitorData,
+        options.fetch
+      );
     }
 
     const paramCache = new Map();
@@ -365,6 +338,43 @@ export default class Session extends EventEmitter {
       options.retrieve_player === false ? undefined : await Player.create(options.cache, options.evaluator, options.fetch, options.po_token, options.player_id),
       options.cookie, options.fetch, options.cache, options.po_token
     );
+  }
+
+  public static async mintPoToken(
+    runnerLocation: string,
+    visitorData: string,
+    fetch: FetchFunction = Platform.shim.fetch
+  ): Promise<string> {
+    const tokens = localStorage.getItem('yt_tkn');
+    let poToken;
+    let tokenVisitorData;
+    let ttl = 0;
+    let creationDate = 0;
+    if (tokens) {
+      const parsedTokens = JSON.parse(tokens);
+      if (parsedTokens.length > 0) {
+        poToken = parsedTokens[0];
+        tokenVisitorData = parsedTokens[1];
+        ttl = parsedTokens[2];
+        creationDate = parsedTokens[3];
+      }
+    }
+
+    if (!poToken || !tokenVisitorData || tokenVisitorData !== visitorData || !ttl || !creationDate || creationDate + ttl * 1000 < Date.now()) {
+      try {
+        const pot = await BGUtils.getPot(fetch, runnerLocation, visitorData);
+        poToken = pot.pot;
+        tokenVisitorData = pot.vd;
+        ttl = pot.ttl;
+        creationDate = Date.now();
+
+        localStorage.setItem('yt_tkn', JSON.stringify([ poToken, tokenVisitorData, ttl, creationDate ]));
+      } catch (error) {
+        Log.error(TAG, 'Failed to get PoT', error);
+      }
+    }
+
+    return poToken;
   }
 
   /**
