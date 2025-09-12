@@ -7,6 +7,7 @@ import userAgents from './user-agents.js';
 import type { EmojiRun, TextRun } from '../parser/misc.js';
 import type { FetchFunction } from '../types/index.js';
 import type PlatformShim from '../types/PlatformShim.js';
+import { packageInfo } from '../core/PackageInfo.js';
 
 const TAG_ = 'Utils';
 
@@ -38,7 +39,7 @@ export class InnertubeError extends Error {
     }
 
     this.date = new Date();
-    this.version = '15.1.0';
+    this.version = packageInfo.version;
   }
 }
 

@@ -12,9 +12,8 @@
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import { ProtoUtils } from '../platform/lib.js';
 import type { FetchFunction } from '../types/PlatformShim.js';
-import { Constants, Platform, Utils } from '../utils/index.js';
+import { Constants, Platform } from '../utils/index.js';
 import { SandboxedEvaluator } from './SandboxedEvaluator.js';
 
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36(KHTML, like Gecko)';
@@ -165,11 +164,11 @@ export class BGUtils {
   }
 
   static getFn2(): any {
-    const fn2 = '(r,e){const t=window.ppf[0];if(!t)throw new Error("PP:Undefined");return(async()=>{const n=await t((r=>{const e={"-":"+",_:"/",".":"="};let t;return t=/[-_.]/g.test(r)?r.replace(/[-_.]/g,(r=>e[r])):r,t=atob(t),new Uint8Array([...t].map((r=>r.charCodeAt(0))))})(r));if("function"!=typeof n)throw new Error("PP:failed");const o=((r,e=!1)=>{const t=btoa(String.fromCharCode(...r));return e?t.replace(/\\+/g,"-").replace(/\\//g,"_"):t})(await n((new TextEncoder).encode(e)),!0);if(o.length>80)return o;throw new Error("PT too small")})()}';
+    const fn2 = 'a(n,r){const t=window.ppf[0];if(!t)throw new Error("PP:Undefined");return(async()=>{function e(n,r=!1){const t=btoa(String.fromCharCode(...n));return r?t.replace(/\\+/g,"-").replace(/\\//g,"_"):t}const o=await t(function(n){const r=/[-_.]/g,t={"-":"+",_:"/",".":"="};let e;return e=r.test(n)?n.replace(r,(function(n){return t[n]})):n,e=atob(e),new Uint8Array([...e].map((n=>n.charCodeAt(0))))}(n));if("function"!=typeof o)throw new Error("PP:failed");const c=[];for(const n of r){const r=await o((new TextEncoder).encode(n));if(!r)throw new Error("YNJ:Undefined");if(!(r instanceof Uint8Array))throw new Error("ODM:Invalid");c.push(e(r,!0))}return c})()}';
     return SandboxedEvaluator.extractFnBodyAndArgs(fn2.toString());
   }
 
-  static async getPot(fetcher: FetchFunction = Platform.shim.fetch, runnerLocation: string, vd?: string, requestToken?: string, apiKey?: string, debug = false): Promise<any> {
+  static async getPot(fetcher: FetchFunction = Platform.shim.fetch, runnerLocation: string, identifiers: string | string[], requestToken?: string, apiKey?: string, debug = false): Promise<any> {
     if (!requestToken) {
       requestToken = Constants.URLS.API.KEY2;
     }
@@ -178,14 +177,13 @@ export class BGUtils {
       apiKey = Constants.URLS.API.KEY;
     }
 
-    if (!vd) {
-      vd = ProtoUtils.encodeVisitorData(Utils.generateRandomString(11), Math.floor(Date.now() / 1000));
-    }
+    identifiers = Array.isArray(identifiers) ? identifiers : [ identifiers ];
 
     const evaluator = new SandboxedEvaluator(runnerLocation);
     let pot: any = null;
     let ttl: any = null;
     let refresh: any = null;
+    const result = [];
     try {
       if (!debug) evaluator.setTimeout(5000);
       await evaluator.load();
@@ -241,13 +239,19 @@ export class BGUtils {
       refresh = tokenData[2];
       if (!debug) evaluator.setTimeout(5000);
       const fn2 = this.getFn2();
-      pot = await evaluator.evaluate(fn2.body, fn2.argNames, [ it, vd ]);
-
+      pot = await evaluator.evaluate(fn2.body, fn2.argNames, [ it, identifiers ]);
+     
+      for (let i = 0; i < pot.length; i++) {
+        result.push({
+          id: identifiers[i],
+          pot: pot[i]
+        });
+      }
       if (!debug) evaluator.close();
     } catch (err) {
       if (!debug) evaluator.close();
       throw err;
     }
-    return { pot, vd, requestToken, ttl, refresh };
+    return { result, requestToken, ttl, refresh };
   }
 }

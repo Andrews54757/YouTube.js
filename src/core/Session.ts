@@ -7,13 +7,13 @@ import { EventEmitter, HTTPClient, BinarySerializer, Log, ProtoUtils } from '../
 import {
   generateRandomString, getRandomUserAgent, Platform, SessionError
 } from '../utils/Utils.js';
-import packageInfo from '../../package.json' with { type: 'json' };
 
 import type { DeviceCategory } from '../utils/Utils.js';
 import type { FetchFunction, ICache } from '../types/index.js';
 import { BGUtils } from '../bgutils/BGUtils.js';
 import { SandboxedEvaluator } from '../bgutils/SandboxedEvaluator.js';
 import type { IRawResponse } from '../parser/index.js';
+import { packageInfo } from './PackageInfo.js';
 
 export enum ClientType {
   WEB = 'WEB',
@@ -266,7 +266,8 @@ export default class Session extends EventEmitter {
     public cookie?: string,
     fetch?: FetchFunction,
     public cache?: ICache,
-    public po_token?: string
+    public po_token?: string,
+    public runner_location?: string
   ) {
     super();
     this.http = new HTTPClient(this, cookie, fetch);
@@ -281,6 +282,10 @@ export default class Session extends EventEmitter {
 
   once(type: string, listener: (...args: any[]) => void): void {
     super.once(type, listener);
+  }
+
+  async getPot(tokens: string[]): Promise<string> {
+    return await BGUtils.getPot(fetch, this.runner_location || "", tokens)
   }
 
   static async create(options: SessionOptions) {
@@ -304,14 +309,6 @@ export default class Session extends EventEmitter {
     );
 
     const runnerLocation = options.runner_location;
-    if (options.client_type === ClientType.WEB && context.client.visitorData) {
-      options.po_token = await Session.mintPoToken(
-        runnerLocation,
-        context.client.visitorData,
-        options.fetch
-      );
-    }
-
     const paramCache = new Map();
     options.evaluator = async (body: string, args: Object) => {
 
@@ -337,45 +334,8 @@ export default class Session extends EventEmitter {
     return new Session(
       context, api_key, api_version, account_index, config_data,
       options.retrieve_player === false ? undefined : await Player.create(options.cache, options.evaluator, options.fetch, options.po_token, options.player_id),
-      options.cookie, options.fetch, options.cache, options.po_token
+      options.cookie, options.fetch, options.cache, options.po_token, runnerLocation
     );
-  }
-
-  public static async mintPoToken(
-    runnerLocation: string,
-    visitorData: string,
-    fetch: FetchFunction = Platform.shim.fetch
-  ): Promise<string> {
-    const tokens = localStorage.getItem('yt_tkn');
-    let poToken;
-    let tokenVisitorData;
-    let ttl = 0;
-    let creationDate = 0;
-    if (tokens) {
-      const parsedTokens = JSON.parse(tokens);
-      if (parsedTokens.length > 0) {
-        poToken = parsedTokens[0];
-        tokenVisitorData = parsedTokens[1];
-        ttl = parsedTokens[2];
-        creationDate = parsedTokens[3];
-      }
-    }
-
-    if (!poToken || !tokenVisitorData || tokenVisitorData !== visitorData || !ttl || !creationDate || creationDate + ttl * 1000 < Date.now()) {
-      try {
-        const pot = await BGUtils.getPot(fetch, runnerLocation, visitorData);
-        poToken = pot.pot;
-        tokenVisitorData = pot.vd;
-        ttl = pot.ttl;
-        creationDate = Date.now();
-
-        localStorage.setItem('yt_tkn', JSON.stringify([ poToken, tokenVisitorData, ttl, creationDate ]));
-      } catch (error) {
-        Log.error(TAG, 'Failed to get PoT', error);
-      }
-    }
-
-    return poToken;
   }
 
   /**
@@ -615,7 +575,7 @@ export default class Session extends EventEmitter {
 
     const api_version = Constants.CLIENTS.WEB.API_VERSION;
 
-    const [ [ device_info ], api_key ] = ytcfg;
+    const [[device_info], api_key] = ytcfg;
 
     const config_info = device_info[61];
     const app_install_data = config_info[config_info.length - 1];

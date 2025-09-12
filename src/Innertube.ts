@@ -46,7 +46,7 @@ export default class Innertube {
     return new Innertube(await Session.create(config));
   }
 
-  async getInfo(target: string | NavigationEndpoint, options?: GetVideoInfoOptions): Promise<VideoInfo> {
+  async getInfo(target: string | NavigationEndpoint, options?: GetVideoInfoOptions, reloadContext?: any): Promise<VideoInfo> {
     throwIfMissing({ target });
 
     const payload = {
@@ -69,11 +69,18 @@ export default class Innertube {
           vis: 0,
           splay: false,
           lactMilliseconds: '-1',
-          signatureTimestamp: session.player?.sts
+          signatureTimestamp: session.player?.sts,
+          adPlaybackContext: {
+            pyv: true
+          }
         }
       },
       client: options?.client
     };
+
+    if (reloadContext) {
+      extra_payload.playbackContext.reloadPlaybackContext = reloadContext;
+    }
 
     if (options?.po_token) {
       extra_payload.serviceIntegrityDimensions = {

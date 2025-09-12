@@ -11,8 +11,7 @@ import {
   Platform,
   PlayerError
 } from '../utils/Utils.js';
-import packageInfo from '../../package.json' with { type: 'json' };
-
+import { packageInfo } from './PackageInfo.js';
 const TAG = 'Player';
 
 interface SerializablePlayer {

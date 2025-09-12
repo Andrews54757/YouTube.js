@@ -5,7 +5,6 @@ import { Memo, observe, SuperParsedResult } from './helpers.js';
 import type { KeyInfo } from './generator.js';
 import { camelToSnake, generateRuntimeClass, generateTypescriptClass } from './generator.js';
 import { Log } from '../utils/index.js';
-import packageInfo from '../../package.json' with { type: 'json' };
 
 import {
   Continuation,
@@ -42,6 +41,7 @@ import MusicThumbnail from './classes/MusicThumbnail.js';
 import OpenPopupAction from './classes/actions/OpenPopupAction.js';
 import AppendContinuationItemsAction from './classes/actions/AppendContinuationItemsAction.js';
 import type { IParsedResponse, IRawResponse, RawData, RawNode } from './types/index.js';
+import { packageInfo } from '../core/PackageInfo.js';
 
 const TAG = 'Parser';
 

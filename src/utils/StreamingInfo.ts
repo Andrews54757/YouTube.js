@@ -3,7 +3,6 @@ import PlayerStoryboardSpec from '../parser/classes/PlayerStoryboardSpec.js';
 import { getStringBetweenStrings, InnertubeError } from './Utils.js';
 import * as Constants from './Constants.js';
 import * as Log from './Log.js';
-import packageInfo from '../../package.json' with { type: 'json' };
 
 import type Actions from '../core/Actions.js';
 import type Player from '../core/Player.js';
@@ -14,6 +13,7 @@ import type { PlayerLiveStoryboardSpec } from '../parser/nodes.js';
 import type { FormatFilter, URLTransformer } from '../types/index.js';
 import type { StreamingInfoOptions } from '../types/StreamingInfoOptions.js';
 import type { CaptionTrackData } from '../parser/classes/PlayerCaptionsTracklist.js';
+import { packageInfo } from '../core/PackageInfo.js';
 
 const TAG_ = 'StreamingInfo';
 
