@@ -2,7 +2,6 @@
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
 import sha1Hash from './polyfills/web-crypto.js';
-import package_json from '../../package.json' with { type: 'json' };
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -81,11 +80,6 @@ class Cache implements ICache {
 
 Platform.load({
   runtime: 'deno',
-  info: {
-    version: package_json.version,
-    bugs_url: package_json.bugs.url,
-    repo_url: package_json.homepage.split('#')[0]
-  },
   server: true,
   Cache: Cache,
   sha1Hash,
