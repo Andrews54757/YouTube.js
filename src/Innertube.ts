@@ -69,10 +69,10 @@ export default class Innertube {
           vis: 0,
           splay: false,
           lactMilliseconds: '-1',
-          signatureTimestamp: session.player?.sts,
-          adPlaybackContext: {
-            pyv: true
-          }
+          signatureTimestamp: session.player?.sts
+        },
+        adPlaybackContext: {
+          pyv: true
         }
       },
       client: options?.client
@@ -95,7 +95,7 @@ export default class Innertube {
     const watch_response = watch_endpoint.call(session.actions, extra_payload);
     const watch_next_response = watch_next_endpoint.call(session.actions);
 
-    const response = await Promise.all([ watch_response, watch_next_response ]);
+    const response = await Promise.all([watch_response, watch_next_response]);
 
     const cpn = generateRandomString(16);
 
@@ -124,7 +124,7 @@ export default class Innertube {
           signatureTimestamp: session.player?.sts
         }
       },
-      client: options?.client  
+      client: options?.client
     };
 
     if (options?.po_token) {
@@ -136,12 +136,12 @@ export default class Innertube {
         poToken: session.po_token
       };
     }
-    
+
     const watch_response = await watch_endpoint.call(session.actions, extra_payload);
 
     const cpn = generateRandomString(16);
 
-    return new VideoInfo([ watch_response ], session.actions, cpn);
+    return new VideoInfo([watch_response], session.actions, cpn);
   }
 
   async getShortsVideoInfo(video_id: string, client?: InnerTubeClient): Promise<ShortFormVideoInfo> {
@@ -172,11 +172,11 @@ export default class Innertube {
 
     const sequence_response = actions.execute('/reel/reel_watch_sequence', { sequenceParams: params });
 
-    const response = await Promise.all([ reel_watch_response, sequence_response ]);
+    const response = await Promise.all([reel_watch_response, sequence_response]);
 
     const cpn = generateRandomString(16);
 
-    return new ShortFormVideoInfo([ response[0] ], actions, cpn, response[1]);
+    return new ShortFormVideoInfo([response[0]], actions, cpn, response[1]);
   }
   async getPlaylist(id: string): Promise<Playlist> {
     throwIfMissing({ id });
@@ -238,10 +238,10 @@ export default class Innertube {
     const payload: Record<string, any> = {
       engagementType: engagement_type
     };
-    
+
     if (ids)
       payload.ids = ids;
-    
+
     return this.actions.execute('/att/get', { parse: true, ...payload });
   }
 
