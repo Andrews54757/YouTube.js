@@ -11,6 +11,7 @@ import {
   Platform,
   PlayerError
 } from '../utils/Utils.js';
+import packageInfo from '../../package.json' with { type: 'json' };
 
 const TAG = 'Player';
 
@@ -210,7 +211,7 @@ export default class Player {
       return null;
 
     try {
-      const current_library_version = parseInt(Platform.shim.info.version.split('.')[0]);
+      const current_library_version = parseInt(packageInfo.version.split('.', 1)[0]);
       const player_data = BinarySerializer.deserialize<SerializablePlayer>(new Uint8Array(buffer));
 
       if (player_data.library_version !== current_library_version) {
@@ -235,7 +236,7 @@ export default class Player {
     if (!cache || !this.sig_sc || !this.nsig_sc)
       return;
 
-    const current_library_version = parseInt(Platform.shim.info.version.split('.')[0]);
+    const current_library_version = parseInt(packageInfo.version.split('.', 1)[0]);
 
     const buffer = BinarySerializer.serialize({
       player_id: this.player_id,
@@ -302,7 +303,7 @@ export default class Player {
     if (!functions || !var_name)
       Log.warn(TAG, 'Failed to extract signature decipher algorithm.');
 
-    return `function sig_fn(sig) {${global_variable?.result || ''} function descramble_sig(${var_name}) { let ${obj_name}={${functions}}; ${match[2]} } return descramble_sig(sig);}`;
+    return `function sig_fn(sig) {${global_variable?.result ? `var ${global_variable.result};` : ''} function descramble_sig(${var_name}) { let ${obj_name}={${functions}}; ${match[2]} } return descramble_sig(sig);}`;
   }
 
   static extractNSigSourceCode(data: string, ast?: ReturnType<typeof parseScript>, global_variable?: ASTLookupResult): string | undefined {
@@ -319,7 +320,7 @@ export default class Player {
         nsig_function = findFunction(data, { includes: '.reverse().forEach(function', ast });
 
       if (nsig_function)
-        return `function nsig_fn(nsig) {${global_variable.result} var ${this.fixSource(nsig_function.result)} return ${nsig_function.name}(nsig);}`;
+        return `function nsig_fn(nsig) { var ${global_variable.result}; var ${this.fixSource(nsig_function.result)} return ${nsig_function.name}(nsig); }`;
     }
 
     // This is the suffix of the error tag.

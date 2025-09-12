@@ -1,10 +1,6 @@
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
-import { $INLINE_JSON } from 'ts-transformer-inline-file';
 import sha1Hash from './polyfills/web-crypto.js';
-
-const { homepage, version, bugs } = $INLINE_JSON('../../package.json');
-const repo_url = homepage?.split('#')[0];
 
 class Cache implements ICache {
   #persistent_directory: string;
@@ -43,11 +39,6 @@ class Cache implements ICache {
 
 Platform.load({
   runtime: 'cf-worker',
-  info: {
-    version: version,
-    bugs_url: bugs?.url || `${repo_url}/issues`,
-    repo_url
-  },
   server: true,
   Cache: Cache,
   sha1Hash,

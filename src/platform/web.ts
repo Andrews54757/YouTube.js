@@ -93,11 +93,6 @@ class Cache implements ICache {
 Platform.load({
   runtime: 'browser',
   server: false,
-  info: {
-    version: '10.3.0',
-    bugs_url: 'https://github.com/LuanRT/YouTube.js/issues',
-    repo_url: 'https://github.com/LuanRT/YouTube.js'
-  },
   Cache: Cache,
   sha1Hash,
   uuidv4() {
