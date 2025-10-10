@@ -1,22 +1,15 @@
 // Node.js Platform Support
 import { ReadableStream } from 'stream/web';
-import {
-  fetch as defaultFetch,
-  Request,
-  Response,
-  Headers,
-  FormData,
-  File
-} from 'undici';
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
 import crypto from 'crypto';
-import type { FetchFunction } from '../types/PlatformShim.js';
 import path from 'path';
 import os from 'os';
 import fs from 'fs/promises';
 import CustomEvent from './polyfills/node-custom-event.js';
 import { fileURLToPath } from 'url';
+import evaluate from './jsruntime/default.js';
+
 const meta_url = import.meta.url;
 const is_cjs = !meta_url;
 const __dirname__ = is_cjs ? __dirname : path.dirname(fileURLToPath(meta_url));
@@ -63,7 +56,7 @@ class Cache implements ICache {
       const stat = await fs.stat(file);
       if (stat.isFile()) {
         const data: Buffer = await fs.readFile(file);
-        return data.buffer;
+        return data.buffer as ArrayBuffer;
       }
       throw new Error('An unexpected file was found in place of the cache key');
 
@@ -102,12 +95,13 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
-  fetch: defaultFetch as unknown as FetchFunction,
-  Request: Request as unknown as typeof globalThis.Request,
-  Response: Response as unknown as typeof globalThis.Response,
-  Headers: Headers as unknown as typeof globalThis.Headers,
-  FormData: FormData as unknown as typeof globalThis.FormData,
-  File: File as unknown as typeof globalThis.File,
+  eval: evaluate,
+  fetch: globalThis.fetch,
+  Request: globalThis.Request,
+  Response: globalThis.Response,
+  Headers: globalThis.Headers,
+  FormData: globalThis.FormData,
+  File: globalThis.File,
   ReadableStream: ReadableStream as unknown as typeof globalThis.ReadableStream,
   CustomEvent: CustomEvent as unknown as typeof globalThis.CustomEvent
 });

@@ -69,7 +69,7 @@ export default class Innertube {
           vis: 0,
           splay: false,
           lactMilliseconds: '-1',
-          signatureTimestamp: session.player?.sts
+          signatureTimestamp: session.player?.signature_timestamp
         },
         adPlaybackContext: {
           pyv: true
@@ -121,7 +121,7 @@ export default class Innertube {
           vis: 0,
           splay: false,
           lactMilliseconds: '-1',
-          signatureTimestamp: session.player?.sts
+          signatureTimestamp: session.player?.signature_timestamp
         }
       },
       client: options?.client
