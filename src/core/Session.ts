@@ -9,7 +9,7 @@ import {
 } from '../utils/Utils.js';
 
 import type { DeviceCategory } from '../utils/Utils.js';
-import type { FetchFunction, ICache } from '../types/index.js';
+import type { BuildScriptResult, EvalFunction, FetchFunction, ICache, VMPrimative } from '../types/index.js';
 import { BGUtils } from '../bgutils/BGUtils.js';
 import { SandboxedEvaluator } from '../bgutils/SandboxedEvaluator.js';
 import type { IRawResponse } from '../parser/index.js';
@@ -205,7 +205,7 @@ export type SessionOptions = {
   /**
    * Evaluator
    */
-  evaluator: Function;
+  evaluator: EvalFunction;
 
   runner_location: string;
   /**
@@ -285,7 +285,7 @@ export default class Session extends EventEmitter {
   }
 
   async getPot(tokens: string[]): Promise<string> {
-    return await BGUtils.getPot(fetch, this.runner_location || "", tokens)
+    return await BGUtils.getPot(fetch, this.runner_location || '', tokens);
   }
 
   static async create(options: SessionOptions) {
@@ -310,17 +310,23 @@ export default class Session extends EventEmitter {
 
     const runnerLocation = options.runner_location;
     const paramCache = new Map();
-    options.evaluator = async (body: string, args: Object) => {
+    options.evaluator = async (data: BuildScriptResult, env: Record<string, VMPrimative>) => {
 
-      const key = `${body}|${JSON.stringify(args)}`;
+      const key = `${JSON.stringify(env)}|${data.exported.join(',')}|${data.output}`;
       const params = paramCache.get(key);
 
       if (params) {
         return await params;
       }
 
-      const fnData = SandboxedEvaluator.extractFnBodyAndArgs(body);
-      const result = SandboxedEvaluator.evaluateOnce(runnerLocation, fnData.body, fnData.argNames, Object.values(args));
+      const body = `
+        ${data.output}
+        return {
+          sig: typeof sig === "string" ? exportedVars.sigFunction(sig) : undefined,
+          n: typeof n === "string" ? exportedVars.nFunction(n) : undefined
+        }
+      `;
+      const result = SandboxedEvaluator.evaluateOnce(runnerLocation, body, Object.keys(env), Object.values(env));
       paramCache.set(key, result);
 
       try {
@@ -333,7 +339,7 @@ export default class Session extends EventEmitter {
 
     return new Session(
       context, api_key, api_version, account_index, config_data,
-      options.retrieve_player === false ? undefined : await Player.create(options.cache, options.evaluator, options.fetch, options.po_token, options.player_id),
+      options.retrieve_player === false ? undefined : await Player.create(options.cache, options.fetch, options.evaluator, options.po_token, options.player_id),
       options.cookie, options.fetch, options.cache, options.po_token, runnerLocation
     );
   }

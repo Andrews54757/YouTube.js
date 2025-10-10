@@ -9,13 +9,15 @@ export type VMPrimative = string | number | boolean | null | undefined;
 
 export type EvalResult = { [key: string]: any } | void;
 
+export type EvalFunction = (data: BuildScriptResult, env: Record<string, VMPrimative>) => Promise<EvalResult> | EvalResult;
+
 interface PlatformShim {
     runtime: Runtime;
     server: boolean;
     Cache: ICacheConstructor;
     sha1Hash(data: string): Promise<string>;
     uuidv4(): string;
-    eval(data: BuildScriptResult, env: Record<string, VMPrimative>): Promise<EvalResult> | EvalResult;
+    eval: EvalFunction;
     fetch: FetchFunction;
     Request: typeof Request;
     Response: typeof Response;

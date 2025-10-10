@@ -90,7 +90,6 @@ export default [
         before: true,
       }],
       "object-curly-spacing": ["warn", "always"],
-      "array-bracket-spacing": ["error", "always"],
       "arrow-parens": ["error", "always"],
       "comma-dangle": ["error", "never"],
       "comma-spacing": ["error", {

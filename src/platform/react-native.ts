@@ -57,6 +57,7 @@ Platform.load({
       ).toString(16);
     });
   },
+  eval: evaluate,
   fetch: globalThis.fetch,
   Request: globalThis.Request,
   Response: globalThis.Response,

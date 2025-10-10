@@ -46,6 +46,7 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
+  eval: evaluate,
   fetch: fetch.bind(globalThis),
   Request: Request,
   Response: Response,

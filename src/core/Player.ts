@@ -1,10 +1,9 @@
-import type { FetchFunction, ICache } from '../types/index.js';
+import type { EvalFunction, FetchFunction, ICache } from '../types/index.js';
 import { Constants, BinarySerializer, Log } from '../utils/index.js';
 
 import {
   getRandomUserAgent,
   getStringBetweenStrings,
-  parseScript,
   Platform,
   PlayerError
 } from '../utils/Utils.js';
@@ -14,8 +13,7 @@ import { nMatcher, sigMatcher, timestampMatcher } from '../utils/javascript/matc
 
 import type { ExtractionConfig } from '../utils/javascript/JsAnalyzer.js';
 import type { BuildScriptResult } from '../utils/javascript/JsExtractor.js';
-
-import packageInfo from '../../package.json' with { type: 'json' };
+import { packageInfo } from './PackageInfo.js';
 
 const TAG = 'Player';
 
@@ -38,11 +36,12 @@ export interface PlayerInitializationOptions {
 export default class Player {
   public po_token?: string;
 
-  constructor(public player_id: string, public signature_timestamp: number, public data?: BuildScriptResult) { /** no-op */ }
+  constructor(public player_id: string, public signature_timestamp: number, public evaluator: EvalFunction, public data?: BuildScriptResult) { /** no-op */ }
 
   public static async create(
     cache: ICache | undefined,
     fetch: FetchFunction = Platform.shim.fetch,
+    evaluator: EvalFunction,
     po_token?: string, player_id?: string
   ): Promise<Player> {
     if (!player_id) {
@@ -125,7 +124,7 @@ export default class Player {
       cache,
       signature_timestamp: parseInt(signatureTimestamp) || 0,
       data: result
-    });
+    }, evaluator);
 
     player.po_token = po_token;
 
@@ -164,7 +163,7 @@ export default class Player {
       }
 
       if (Object.keys(eval_args).length > 0) {
-        const result = await Platform.shim.eval(this.data, eval_args) as Record<string, unknown>;
+        const result = await this.evaluator(this.data, eval_args) as Record<string, unknown>;
 
         if (typeof result !== 'object' || result === null) {
           throw new PlayerError('Got invalid result from player script evaluation.');
@@ -243,7 +242,7 @@ export default class Player {
     return url_components.toString();
   }
 
-  static async fromCache(cache: ICache, player_id: string, evaluator: Function): Promise<Player | null> {
+  static async fromCache(cache: ICache, player_id: string, evaluator: EvalFunction): Promise<Player | null> {
     const buffer = await cache.get(player_id);
 
     if (!buffer)
@@ -257,15 +256,15 @@ export default class Player {
         return null;
       }
 
-      return new Player(deserializedCache.playerId, deserializedCache.signatureTimestamp, deserializedCache.data);
+      return new Player(deserializedCache.playerId, deserializedCache.signatureTimestamp, evaluator, deserializedCache.data);
     } catch (e) {
       Log.error(TAG, 'Failed to deserialize player data from cache:', e);
       return null;
     }
   }
 
-  static async fromSource(player_id: string, options: PlayerInitializationOptions): Promise<Player> {
-    const player = new Player(player_id, options.signature_timestamp, options.data);
+  static async fromSource(player_id: string, options: PlayerInitializationOptions, evaluator: EvalFunction): Promise<Player> {
+    const player = new Player(player_id, options.signature_timestamp, evaluator, options.data);
     await player.cache(options.cache);
     return player;
   }

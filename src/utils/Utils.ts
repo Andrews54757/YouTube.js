@@ -2,6 +2,9 @@ import type { EmojiRun, TextRun } from '../parser/misc.js';
 import type { FetchFunction } from '../types/index.js';
 import type PlatformShim from '../types/PlatformShim.js';
 import { packageInfo } from '../core/PackageInfo.js';
+import userAgents from './user-agents.js';
+import { Memo } from '../parser/helpers.js';
+import * as Log from './Log.js';
 
 const TAG_ = 'Utils';
 
