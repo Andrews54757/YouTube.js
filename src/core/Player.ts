@@ -24,7 +24,7 @@ interface SerializablePlayer {
   data?: BuildScriptResult;
 }
 
-export interface PlayerInitializationOptions {
+interface PlayerInitializationOptions {
   cache?: ICache;
   signature_timestamp: number;
   data: BuildScriptResult;
