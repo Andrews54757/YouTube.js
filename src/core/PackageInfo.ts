@@ -1,5 +1,5 @@
 export const packageInfo = { 
-  version: '15.1.3',
+  version: '16.0.0',
   bugs: {
     url: 'https://github.com/LuanRT/YouTube.js/issues'
   },
