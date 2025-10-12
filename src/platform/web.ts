@@ -2,7 +2,6 @@
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
 import sha1Hash from './polyfills/web-crypto.js';
-import evaluate from './jsruntime/default.js';
 import * as Log from '../utils/Log.js';
 
 const CACHE_TAG = 'Cache';
@@ -107,7 +106,6 @@ Platform.load({
       return (c ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
     });
   },
-  eval: evaluate,
   fetch: globalThis.fetch,
   Request: globalThis.Request,
   Response: globalThis.Response,

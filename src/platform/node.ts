@@ -8,7 +8,6 @@ import os from 'os';
 import fs from 'fs/promises';
 import CustomEvent from './polyfills/node-custom-event.js';
 import { fileURLToPath } from 'url';
-import evaluate from './jsruntime/default.js';
 
 const meta_url = import.meta.url;
 const is_cjs = !meta_url;
@@ -95,7 +94,6 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
-  eval: evaluate,
   fetch: globalThis.fetch,
   Request: globalThis.Request,
   Response: globalThis.Response,

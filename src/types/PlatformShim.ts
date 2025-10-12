@@ -17,7 +17,6 @@ interface PlatformShim {
     Cache: ICacheConstructor;
     sha1Hash(data: string): Promise<string>;
     uuidv4(): string;
-    eval: EvalFunction;
     fetch: FetchFunction;
     Request: typeof Request;
     Response: typeof Response;

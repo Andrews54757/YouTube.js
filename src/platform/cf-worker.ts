@@ -1,6 +1,5 @@
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
-import evaluate from './jsruntime/default.js';
 import sha1Hash from './polyfills/web-crypto.js';
 
 class Cache implements ICache {
@@ -46,7 +45,6 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
-  eval: evaluate,
   fetch: fetch.bind(globalThis),
   Request: Request,
   Response: Response,

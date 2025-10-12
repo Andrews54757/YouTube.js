@@ -1,7 +1,6 @@
 // Deno Platform Support
 import type { ICache } from '../types/Cache.js';
 import { Platform } from '../utils/Utils.js';
-import evaluate from './jsruntime/default.js';
 import sha1Hash from './polyfills/web-crypto.js';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -87,7 +86,6 @@ Platform.load({
   uuidv4() {
     return crypto.randomUUID();
   },
-  eval: evaluate,
   fetch: globalThis.fetch,
   Request: globalThis.Request,
   Response: globalThis.Response,
