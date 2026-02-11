@@ -4,9 +4,7 @@ export const URLS = {
   YT_MUSIC_BASE: 'https://music.youtube.com',
   YT_SUGGESTIONS: 'https://suggestqueries-clients6.youtube.com',
   YT_UPLOAD: 'https://upload.youtube.com/',
-  YT_IT_BASE: 'https://jnn-pa.googleapis.com',
-  YT_IT_GEN: '/$rpc/google.internal.waa.v1.Waa/GenerateIT',
-  YT_IT_CREATE: '/$rpc/google.internal.waa.v1.Waa/Create',
+  YT_IT_GEN: '/api/jnn/v1/GenerateIT',
   API: {
     KEY: 'wnAoJLKFLDp7fdfytqqP03F94hJ0W5TyDySazIA'.split('').reverse().join(''),
     KEY2: 'oAK4xCS02Xghjpd0z34O'.split('').reverse().join(''),

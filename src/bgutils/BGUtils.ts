@@ -12,9 +12,10 @@
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import { type Session } from '../core/index.js';
 import type { FetchFunction } from '../types/PlatformShim.js';
 import { Constants, Platform } from '../utils/index.js';
-import { SandboxedEvaluator } from './SandboxedEvaluator.js';
+import { extractFnBodyAndArgs, type SandboxedEvaluator } from './SandboxedEvaluator.js';
 
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36(KHTML, like Gecko)';
 
@@ -37,7 +38,7 @@ export class BGUtils {
     base64Mod = atob(base64Mod);
 
     const result = new Uint8Array(
-      [ ...base64Mod ].map((char) => char.charCodeAt(0))
+      [...base64Mod].map((char) => char.charCodeAt(0))
     );
 
     return result;
@@ -55,22 +56,26 @@ export class BGUtils {
     return result;
   }
 
-  static async createChallenge(fetcher: FetchFunction, requestToken: string, interpreterHash: string | null, apiKey: string): Promise<any> {
-    const payload = [ requestToken ];
+  static async createChallenge(inntertube: Session, fetcher: FetchFunction, requestToken: string, interpreterHash: string | null, apiKey: string): Promise<any> {
+    const payload = [requestToken];
 
     if (interpreterHash) {
       payload.push(interpreterHash);
     }
 
-    const response = await fetcher(Constants.URLS.YT_IT_BASE + Constants.URLS.YT_IT_CREATE, {
+    const response = await fetcher('https://www.youtube.com/youtubei/v1/att/get?prettyPrint=false&alt=json', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json+protobuf',
-        'User-Agent': USER_AGENT,
-        'x-goog-api-key': apiKey,
-        'x-user-agent': 'grpc-web-javascript/0.1'
+        'Accept': '*/*',
+        'Content-Type': 'application/json',
+        'X-Goog-Visitor-Id': inntertube.context.client.visitorData || '',
+        'X-Youtube-Client-Version': inntertube.context.client.clientVersion,
+        'X-Youtube-Client-Name': '1'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        engagementType: 'ENGAGEMENT_TYPE_UNBOUND',
+        context: inntertube.context
+      })
     });
 
     if (!response.ok) {
@@ -78,13 +83,11 @@ export class BGUtils {
     }
 
     const challenge = await response.json();
-
-    if (challenge.length > 1 && challenge[1]) {
-      const parsedChallenge = BGUtils.parseChallenge(challenge[1]);
-      if (parsedChallenge) {
-        return parsedChallenge;
-      }
+    if (!challenge.bgChallenge) {
+      throw new Error('No challenge found');
     }
+
+    return challenge.bgChallenge;
   }
 
   static b64ToBuf(b64: string): string {
@@ -105,7 +108,7 @@ export class BGUtils {
   static parseChallenge(challenge: string): any {
     const str = BGUtils.b64ToBuf(challenge);
     if (str.length) {
-      const [ messageId, script, , interpreterHash, challenge, globalName ] = JSON.parse(str);
+      const [messageId, script, , interpreterHash, challenge, globalName] = JSON.parse(str);
       return {
         script,
         interpreterHash,
@@ -123,7 +126,7 @@ export class BGUtils {
       throw new Error('Content binding is too long.');
 
     const timestamp = Math.floor(Date.now() / 1000);
-    const randomKeys = [ Math.floor(Math.random() * 256), Math.floor(Math.random() * 256) ];
+    const randomKeys = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
 
     // NOTE: The "0" value before the client state is supposed to be someVal & 0xFF.
     // It is always 0 though, so I didn't bother investigating further.
@@ -159,16 +162,20 @@ export class BGUtils {
   }
 
   static getFn1(): any {
-    const fn1 = '(n){return(async()=>{const r=window[n.globalName];if(!r)throw new Error("V not found");const o={fn1:null,fn2:null,fn3:null,fn4:null};if(!r.a)throw new Error("Init failed");try{await r.a(n.challenge,(function(n,r,t,f){o.fn1=n,o.fn2=r,o.fn3=t,o.fn4=f}),!0,void 0,((...n)=>{}))}catch(n){throw new Error("Failed to load")}if(!o.fn1)throw new Error("fn1 unavailable.");let t=null;const f=[];if(await o.fn1((n=>{t=n}),[,,f]),!t)throw new Error("[BG]: No response");if(!f.length)throw new Error("No ppf");return window.ppf=f,t})()}';
-    return SandboxedEvaluator.extractFnBodyAndArgs(fn1);
+    const fn1 = 'fn1(n){return(async()=>{const o=window[n.globalName];if(!o)throw new Error("V not found");const t={asyncSnapshotFunction:null,shutdownFunction:null,passEventFunction:null,checkCameraFunction:null};function e(n=1e4){let o,t;const e=new Promise(((n,e)=>{o=n,t=e})),r=setTimeout((()=>{t(new Error("timeout"))}),n);return{promise:e,resolve:n=>{clearTimeout(r),o(n)},reject:t}}let{promise:r,resolve:i}=e(1e4);if(!o.a)throw new Error("Init failed");try{o.a(n.program,(function(n,o,e,r){t.asyncSnapshotFunction=n,t.shutdownFunction=o,t.passEventFunction=e,t.checkCameraFunction=r,i()}),!0,void 0,((...n)=>{})),await r}catch(n){throw new Error("Failed to load")}if(!t.asyncSnapshotFunction)throw new Error("fn1 unavailable.");let{promise:a,resolve:c}=e();const u=[];t.asyncSnapshotFunction((n=>c(n)),[void 0,void 0,u,void 0]);const s=await a;if(!u.length)throw new Error("No output");return window.ppf=u,s})()}';
+    return extractFnBodyAndArgs(fn1);
   }
 
   static getFn2(): any {
     const fn2 = 'a(n,r){const t=window.ppf[0];if(!t)throw new Error("PP:Undefined");return(async()=>{function e(n,r=!1){const t=btoa(String.fromCharCode(...n));return r?t.replace(/\\+/g,"-").replace(/\\//g,"_"):t}const o=await t(function(n){const r=/[-_.]/g,t={"-":"+",_:"/",".":"="};let e;return e=r.test(n)?n.replace(r,(function(n){return t[n]})):n,e=atob(e),new Uint8Array([...e].map((n=>n.charCodeAt(0))))}(n));if("function"!=typeof o)throw new Error("PP:failed");const c=[];for(const n of r){const r=await o((new TextEncoder).encode(n));if(!r)throw new Error("YNJ:Undefined");if(!(r instanceof Uint8Array))throw new Error("ODM:Invalid");c.push(e(r,!0))}return c})()}';
-    return SandboxedEvaluator.extractFnBodyAndArgs(fn2.toString());
+    return extractFnBodyAndArgs(fn2.toString());
   }
 
-  static async getPot(fetcher: FetchFunction = Platform.shim.fetch, runnerLocation: string, identifiers: string | string[], requestToken?: string, apiKey?: string, debug = false): Promise<any> {
+  static async getPot(
+    innertube: Session,
+    fetcher: FetchFunction = Platform.shim.fetch,
+    evaluator: SandboxedEvaluator, identifiers: string | string[], requestToken?: string, apiKey?: string, debug = false
+  ): Promise<any> {
     if (!requestToken) {
       requestToken = Constants.URLS.API.KEY2;
     }
@@ -177,9 +184,8 @@ export class BGUtils {
       apiKey = Constants.URLS.API.KEY;
     }
 
-    identifiers = Array.isArray(identifiers) ? identifiers : [ identifiers ];
+    identifiers = Array.isArray(identifiers) ? identifiers : [identifiers];
 
-    const evaluator = new SandboxedEvaluator(runnerLocation);
     let pot: any = null;
     let ttl: any = null;
     let refresh: any = null;
@@ -189,37 +195,50 @@ export class BGUtils {
       await evaluator.load();
       if (!debug) evaluator.setTimeout(null);
 
-      const challenge = await BGUtils.createChallenge(fetcher, requestToken, null, apiKey);
+      const challenge = await BGUtils.createChallenge(innertube, fetcher, requestToken, null, apiKey);
 
       if (!challenge) {
         throw new Error('C is incorrect');
       }
 
-      if (!challenge.script) {
-        throw new Error('CS is bad');
+      if (!challenge.program) {
+        throw new Error('P is bad');
       }
 
-      const script = challenge.script.find((sc: any) => sc !== null);
-      if (!script) {
-        throw new Error('CS is null');
+      if (!challenge.globalName) {
+        throw new Error('G is bad');
+      }
+
+      let interpreterUrl = challenge.interpreterUrl?.privateDoNotAccessOrElseTrustedResourceUrlWrappedValue;
+      if (!interpreterUrl) {
+        throw new Error('I is bad');
+      }
+
+      if (interpreterUrl.startsWith('//')) {
+        interpreterUrl = `https:${interpreterUrl}`;
+      }
+
+      const bgScriptResponse = await fetcher(interpreterUrl);
+      const interpreterJavascript = await bgScriptResponse.text();
+      if (!interpreterJavascript) {
+        throw new Error('Failed to fetch I');
       }
 
       if (!debug) evaluator.setTimeout(5000);
-      await evaluator.evaluate(script, [], []);
+      await evaluator.evaluate(interpreterJavascript, [], []);
       if (!debug) evaluator.setTimeout(5000);
       const fn1 = this.getFn1();
-      const response = await evaluator.evaluate(fn1.body, fn1.argNames, [ challenge ]);
+      const response = await evaluator.evaluate(fn1.body, fn1.argNames, [challenge]);
       if (!debug) evaluator.setTimeout(null);
 
-      const payload = [ requestToken, response ];
-      const response2 = await fetcher(Constants.URLS.YT_IT_BASE + Constants.URLS.YT_IT_GEN, {
+      const payload = [requestToken, response];
+      const response2 = await fetcher(Constants.URLS.YT_BASE + Constants.URLS.YT_IT_GEN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json+protobuf',
           'x-goog-api-key': apiKey,
           'x-user-agent': 'grpc-web-javascript/0.1',
-          'User-Agent': USER_AGENT,
-          'Accept': '*/*'
+          'User-Agent': USER_AGENT
         },
         body: JSON.stringify(payload)
       });
@@ -239,8 +258,8 @@ export class BGUtils {
       refresh = tokenData[2];
       if (!debug) evaluator.setTimeout(5000);
       const fn2 = this.getFn2();
-      pot = await evaluator.evaluate(fn2.body, fn2.argNames, [ it, identifiers ]);
-     
+      pot = await evaluator.evaluate(fn2.body, fn2.argNames, [it, identifiers]);
+
       for (let i = 0; i < pot.length; i++) {
         result.push({
           id: identifiers[i],

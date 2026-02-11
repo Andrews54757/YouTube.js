@@ -11,7 +11,7 @@ import {
 import type { DeviceCategory } from '../utils/Utils.js';
 import type { BuildScriptResult, EvalFunction, FetchFunction, ICache, VMPrimative } from '../types/index.js';
 import { BGUtils } from '../bgutils/BGUtils.js';
-import { SandboxedEvaluator } from '../bgutils/SandboxedEvaluator.js';
+import { evaluateOnce, type SandboxedEvaluator } from '../bgutils/SandboxedEvaluator.js';
 import type { IRawResponse } from '../parser/index.js';
 import { packageInfo } from './PackageInfo.js';
 
@@ -212,7 +212,7 @@ export type SessionOptions = {
    */
   evaluator: EvalFunction;
 
-  runner_location: string;
+  sandboxGetter: () => SandboxedEvaluator;
   /**
    * Player ID override.
    * In most cases, this isn't necessary; but when YouTube introduces breaking changes,
@@ -266,13 +266,13 @@ export default class Session extends EventEmitter {
     public api_key: string,
     public api_version: string,
     public account_index: number,
+    public sandboxGetter: () => SandboxedEvaluator,
     public config_data?: string,
     public player?: Player,
     public cookie?: string,
-    fetch?: FetchFunction,
+    public fetch?: FetchFunction,
     public cache?: ICache,
-    public po_token?: string,
-    public runner_location?: string
+    public po_token?: string
   ) {
     super();
     this.http = new HTTPClient(this, cookie, fetch);
@@ -290,7 +290,7 @@ export default class Session extends EventEmitter {
   }
 
   async getPot(tokens: string[]): Promise<string> {
-    return await BGUtils.getPot(fetch, this.runner_location || '', tokens);
+    return await BGUtils.getPot(this, this.fetch, this.sandboxGetter(), tokens);
   }
 
   static async create(options: SessionOptions) {
@@ -313,11 +313,8 @@ export default class Session extends EventEmitter {
       options.po_token,
       options.retrieve_innertube_config
     );
-
-    const runnerLocation = options.runner_location;
     const paramCache = new Map();
     options.evaluator = async (data: BuildScriptResult, env: Record<string, VMPrimative>) => {
-
       const key = `${JSON.stringify(env)}|${data.exported.join(',')}|${data.output}`;
       const params = paramCache.get(key);
 
@@ -332,7 +329,8 @@ export default class Session extends EventEmitter {
           n: typeof n === "string" ? exportedVars.nFunction(n) : undefined
         }
       `;
-      const result = SandboxedEvaluator.evaluateOnce(runnerLocation, body, Object.keys(env), Object.values(env));
+      const sandbox = options.sandboxGetter();
+      const result = evaluateOnce(sandbox, body, Object.keys(env), Object.values(env));
       paramCache.set(key, result);
 
       try {
@@ -344,9 +342,9 @@ export default class Session extends EventEmitter {
     };
 
     return new Session(
-      context, api_key, api_version, account_index, config_data,
+      context, api_key, api_version, account_index, options.sandboxGetter, config_data,
       options.retrieve_player === false ? undefined : await Player.create(options.cache, options.fetch, options.evaluator, options.po_token, options.player_id),
-      options.cookie, options.fetch, options.cache, options.po_token, runnerLocation
+      options.cookie, options.fetch, options.cache, options.po_token
     );
   }
 
