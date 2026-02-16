@@ -70,9 +70,6 @@ export default class Innertube {
           splay: false,
           lactMilliseconds: '-1',
           signatureTimestamp: session.player?.signature_timestamp
-        },
-        adPlaybackContext: {
-          pyv: true
         }
       },
       client: options?.client
