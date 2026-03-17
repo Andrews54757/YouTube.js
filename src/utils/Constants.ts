@@ -57,9 +57,17 @@ export const CLIENTS = {
   },
   ANDROID: {
     NAME: 'ANDROID',
-    VERSION: '19.35.36',
-    SDK_VERSION: 33,
-    USER_AGENT: 'com.google.android.youtube/19.35.36(Linux; U; Android 13; en_US; SM-S908E Build/TP1A.220624.014) gzip'
+    VERSION: '21.03.36',
+    SDK_VERSION: 36,
+    USER_AGENT: 'com.google.android.youtube/21.03.36(Linux; U; Android 16; en_US; SM-S908E Build/TP1A.220624.014) gzip'
+  },
+  ANDROID_VR: {
+    NAME: 'ANDROID_VR',
+    VERSION: '1.65.10',
+    SDK_VERSION: 32,
+    DEVICE_MAKE: 'Oculus',
+    DEVICE_MODEL: 'Quest 3',
+    USER_AGENT: 'com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip'
   },
   YTSTUDIO_ANDROID: {
     NAME: 'ANDROID_CREATOR',
@@ -71,7 +79,7 @@ export const CLIENTS = {
   },
   TV: {
     NAME: 'TVHTML5',
-    VERSION: '7.20250219.14.00',
+    VERSION: '7.20260311.12.00',
     USER_AGENT: 'Mozilla/5.0 (ChromiumStylePlatform) Cobalt/Version'
   },
   TV_SIMPLY: {
@@ -109,6 +117,7 @@ export const CLIENT_NAME_IDS = {
   ANDROID: '3',
   ANDROID_CREATOR: '14',
   ANDROID_MUSIC: '21',
+  ANDROID_VR: '28',
   TVHTML5: '7',
   TVHTML5_SIMPLY: '74',
   TVHTML5_SIMPLY_EMBEDDED_PLAYER: '85',
@@ -127,4 +136,4 @@ export const INNERTUBE_HEADERS_BASE = {
   'content-type': 'application/json'
 } as const;
 
-export const SUPPORTED_CLIENTS = [ 'IOS', 'WEB', 'MWEB', 'YTKIDS', 'YTMUSIC', 'ANDROID', 'YTSTUDIO_ANDROID', 'YTMUSIC_ANDROID', 'TV', 'TV_SIMPLY', 'TV_EMBEDDED', 'WEB_EMBEDDED', 'WEB_CREATOR' ];
+export const SUPPORTED_CLIENTS = [ 'IOS', 'WEB', 'MWEB', 'YTKIDS', 'YTMUSIC', 'ANDROID', 'ANDROID_VR', 'YTSTUDIO_ANDROID', 'YTMUSIC_ANDROID', 'TV', 'TV_SIMPLY', 'TV_EMBEDDED', 'WEB_EMBEDDED', 'WEB_CREATOR' ];
