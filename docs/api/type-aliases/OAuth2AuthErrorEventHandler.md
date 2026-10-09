@@ -1,10 +1,10 @@
 [youtubei.js](../README.md) / OAuth2AuthErrorEventHandler
 
-# Type Alias: OAuth2AuthErrorEventHandler()
+# Type Alias: OAuth2AuthErrorEventHandler
 
 > **OAuth2AuthErrorEventHandler** = (`err`) => `void`
 
-Defined in: [src/core/OAuth2.ts:33](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/OAuth2.ts#L33)
+Defined in: [src/core/OAuth2.ts:33](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/OAuth2.ts#L33)
 
 ## Parameters
 

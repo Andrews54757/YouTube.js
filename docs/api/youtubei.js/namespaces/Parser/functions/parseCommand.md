@@ -4,7 +4,7 @@
 
 > **parseCommand**(`data`): [`YTNode`](../../Helpers/classes/YTNode.md) \| `undefined`
 
-Defined in: [src/parser/parser.ts:663](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/parser.ts#L663)
+Defined in: [src/parser/parser.ts:696](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/parser.ts#L696)
 
 Parses an InnerTube command and returns a YTNode instance if applicable.
 

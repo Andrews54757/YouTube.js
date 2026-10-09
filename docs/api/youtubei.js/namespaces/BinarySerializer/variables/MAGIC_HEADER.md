@@ -4,4 +4,4 @@
 
 > `const` **MAGIC\_HEADER**: `5849684` = `0x594254`
 
-Defined in: [src/utils/BinarySerializer.ts:3](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/utils/BinarySerializer.ts#L3)
+Defined in: [src/utils/BinarySerializer.ts:3](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/BinarySerializer.ts#L3)

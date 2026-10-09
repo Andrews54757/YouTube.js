@@ -2,9 +2,9 @@
 
 # Function: encodeCommentActionParams()
 
-> **encodeCommentActionParams**(`type`, `args`): `string`
+> **encodeCommentActionParams**(`type`, `args?`): `string`
 
-Defined in: [src/utils/ProtoUtils.ts:20](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/utils/ProtoUtils.ts#L20)
+Defined in: [src/utils/ProtoUtils.ts:20](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/ProtoUtils.ts#L20)
 
 ## Parameters
 
@@ -12,7 +12,7 @@ Defined in: [src/utils/ProtoUtils.ts:20](https://github.com/LuanRT/YouTube.js/bl
 
 `number`
 
-### args
+### args?
 
 [`CommentActionParamsArgs`](../type-aliases/CommentActionParamsArgs.md) = `{}`
 

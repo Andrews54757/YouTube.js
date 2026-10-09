@@ -2,7 +2,7 @@
 
 # Interface: ApiResponse
 
-Defined in: [src/core/Actions.ts:18](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Actions.ts#L18)
+Defined in: [src/core/Actions.ts:19](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Actions.ts#L19)
 
 ## Properties
 
@@ -10,7 +10,7 @@ Defined in: [src/core/Actions.ts:18](https://github.com/LuanRT/YouTube.js/blob/0
 
 > **data**: [`IRawResponse`](IRawResponse.md)
 
-Defined in: [src/core/Actions.ts:21](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Actions.ts#L21)
+Defined in: [src/core/Actions.ts:22](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Actions.ts#L22)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [src/core/Actions.ts:21](https://github.com/LuanRT/YouTube.js/blob/0
 
 > **status\_code**: `number`
 
-Defined in: [src/core/Actions.ts:20](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Actions.ts#L20)
+Defined in: [src/core/Actions.ts:21](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Actions.ts#L21)
 
 ***
 
@@ -26,4 +26,4 @@ Defined in: [src/core/Actions.ts:20](https://github.com/LuanRT/YouTube.js/blob/0
 
 > **success**: `boolean`
 
-Defined in: [src/core/Actions.ts:19](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Actions.ts#L19)
+Defined in: [src/core/Actions.ts:20](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Actions.ts#L20)

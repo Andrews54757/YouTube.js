@@ -2,9 +2,9 @@
 
 # Function: getCookie()
 
-> **getCookie**(`cookies`, `name`, `matchWholeName`): `string` \| `undefined`
+> **getCookie**(`cookies`, `name`, `matchWholeName?`): `string` \| `undefined`
 
-Defined in: [src/utils/Utils.ts:260](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/utils/Utils.ts#L260)
+Defined in: [src/utils/Utils.ts:268](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/Utils.ts#L268)
 
 ## Parameters
 
@@ -16,7 +16,7 @@ Defined in: [src/utils/Utils.ts:260](https://github.com/LuanRT/YouTube.js/blob/0
 
 `string`
 
-### matchWholeName
+### matchWholeName?
 
 `boolean` = `false`
 

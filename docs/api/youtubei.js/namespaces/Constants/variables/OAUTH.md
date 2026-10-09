@@ -4,18 +4,12 @@
 
 > `const` **OAUTH**: `object`
 
-Defined in: [src/utils/Constants.ts:19](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/utils/Constants.ts#L19)
+Defined in: [src/utils/Constants.ts:19](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/Constants.ts#L19)
 
 ## Type Declaration
 
-### REGEX
-
-> `readonly` **REGEX**: `object`
-
-#### REGEX.CLIENT\_IDENTITY
-
-> `readonly` **CLIENT\_IDENTITY**: `RegExp`
-
-#### REGEX.TV\_SCRIPT
-
-> `readonly` **TV\_SCRIPT**: `RegExp`
+| Name | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="property-regex"></a> `REGEX` | `object` | [src/utils/Constants.ts:20](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/Constants.ts#L20) |
+| `REGEX.CLIENT_IDENTITY` | `RegExp` | [src/utils/Constants.ts:22](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/Constants.ts#L22) |
+| `REGEX.TV_SCRIPT` | `RegExp` | [src/utils/Constants.ts:21](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/Constants.ts#L21) |

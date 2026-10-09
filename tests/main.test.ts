@@ -6,7 +6,7 @@ describe('YouTube.js Tests', () => {
   let innertube: Innertube;
 
   beforeAll(async () => {
-    innertube = await Innertube.create({ generate_session_locally: true });
+    innertube = await Innertube.create({ generate_session_locally: false });
   });
 
   describe('Main', () => {
@@ -115,8 +115,8 @@ describe('YouTube.js Tests', () => {
         let loaded_comment_thread: YTNodes.CommentThread;
 
         beforeAll(async () => {
-          let comment_thread = comments.contents.first();
-          loaded_comment_thread = await comment_thread.getReplies();
+          let comment_thread = comments.contents.find((comment) => parseInt(comment.comment?.reply_count || '0') > 10);
+          loaded_comment_thread = await comment_thread!.getReplies();
           expect(loaded_comment_thread.replies).toBeDefined();
         });
 
@@ -268,10 +268,18 @@ describe('YouTube.js Tests', () => {
         expect(hashtag.videos.length).toBeGreaterThan(0);
       });
 
-      test('HashtagFeed#getContinuation', async () => {
-        const incremental_continuation = await hashtag.getContinuation();
-        expect(incremental_continuation).toBeDefined();
-        expect(incremental_continuation.videos.length).toBeGreaterThan(0);
+      // Doesn't look like YouTube serves continuation for hashtag pages anymore.
+      // @TODO: Check this again in the future in case it is a bug on their side.
+      // test('HashtagFeed#getContinuation', async () => {
+      //   const incremental_continuation = await hashtag.getContinuation();
+      //   expect(incremental_continuation).toBeDefined();
+      //   expect(incremental_continuation.videos.length).toBeGreaterThan(0);
+      // });
+
+      test('supports hashtags whose params require URL-safe Base64', async () => {
+        const cyrillic_hashtag = await innertube.getHashtag('биткоин');
+        expect(cyrillic_hashtag).toBeDefined();
+        expect(cyrillic_hashtag.videos.length).toBeGreaterThan(0);
       });
     });
 
@@ -420,26 +428,26 @@ describe('YouTube.js Tests', () => {
     });
 
     test('Innertube#music.getLyrics', async () => {
-      const lyrics = await innertube.music.getLyrics('eaJHysi5tYg');
+      const lyrics = await innertube.music.getLyrics('CO0-a3O0G7g');
       expect(lyrics).toBeDefined();
       expect(lyrics?.description).toBeDefined();
       expect(lyrics?.footer).toBeDefined();
     });
 
     test('Innertube#music.getUpNext', async () => {
-      const upnext = await innertube.music.getUpNext('eaJHysi5tYg');
+      const upnext = await innertube.music.getUpNext('CO0-a3O0G7g');
       expect(upnext).toBeDefined();
       expect(upnext?.contents).toBeDefined();
       expect(upnext?.contents?.length).toBeGreaterThan(0);
     });
 
     test('Innertube#music.getRelated', async () => {
-      const related = await innertube.music.getRelated('eaJHysi5tYg');
+      const related = await innertube.music.getRelated('CO0-a3O0G7g');
       expect(related).toBeDefined();
     });
 
     test('Innertube#music.getSearchSuggestions', async () => {
-      const suggestions = await innertube.music.getSearchSuggestions('Joji - In Tongues');
+      const suggestions = await innertube.music.getSearchSuggestions('Windows96');
       expect(suggestions).toBeDefined();
       expect(suggestions?.length).toBeGreaterThan(0);
     });

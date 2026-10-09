@@ -4,7 +4,7 @@
 
 > **SessionData** = `object`
 
-Defined in: [src/core/Session.ts:217](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Session.ts#L217)
+Defined in: [src/core/Session.ts:224](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Session.ts#L224)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [src/core/Session.ts:217](https://github.com/LuanRT/YouTube.js/blob/
 
 > **api\_key**: `string`
 
-Defined in: [src/core/Session.ts:219](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Session.ts#L219)
+Defined in: [src/core/Session.ts:226](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Session.ts#L226)
 
 ***
 
@@ -20,15 +20,15 @@ Defined in: [src/core/Session.ts:219](https://github.com/LuanRT/YouTube.js/blob/
 
 > **api\_version**: `string`
 
-Defined in: [src/core/Session.ts:220](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Session.ts#L220)
+Defined in: [src/core/Session.ts:227](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Session.ts#L227)
 
 ***
 
 ### config\_data?
 
-> `optional` **config\_data**: `string`
+> `optional` **config\_data?**: `string`
 
-Defined in: [src/core/Session.ts:221](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Session.ts#L221)
+Defined in: [src/core/Session.ts:228](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Session.ts#L228)
 
 ***
 
@@ -36,4 +36,4 @@ Defined in: [src/core/Session.ts:221](https://github.com/LuanRT/YouTube.js/blob/
 
 > **context**: [`Context`](Context.md)
 
-Defined in: [src/core/Session.ts:218](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/core/Session.ts#L218)
+Defined in: [src/core/Session.ts:225](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/core/Session.ts#L225)

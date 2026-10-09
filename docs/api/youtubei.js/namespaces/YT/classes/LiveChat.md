@@ -2,11 +2,11 @@
 
 # Class: LiveChat
 
-Defined in: [src/parser/youtube/LiveChat.ts:58](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L58)
+Defined in: [src/parser/youtube/LiveChat.ts:66](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L66)
 
 ## Extends
 
-- [`EventEmitter`](../../../../classes/EventEmitter.md)
+- [`EventEmitter`](../../../../classes/EventEmitter.md)\<`LiveChatEvents`\>
 
 ## Constructors
 
@@ -14,7 +14,7 @@ Defined in: [src/parser/youtube/LiveChat.ts:58](https://github.com/LuanRT/YouTub
 
 > **new LiveChat**(`video_info`): `LiveChat`
 
-Defined in: [src/parser/youtube/LiveChat.ts:73](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L73)
+Defined in: [src/parser/youtube/LiveChat.ts:81](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L81)
 
 #### Parameters
 
@@ -34,9 +34,9 @@ Defined in: [src/parser/youtube/LiveChat.ts:73](https://github.com/LuanRT/YouTub
 
 ### initial\_info?
 
-> `optional` **initial\_info**: [`LiveChatContinuation`](../../../../classes/LiveChatContinuation.md)
+> `optional` **initial\_info?**: [`LiveChatContinuation`](../../../../classes/LiveChatContinuation.md)
 
-Defined in: [src/parser/youtube/LiveChat.ts:68](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L68)
+Defined in: [src/parser/youtube/LiveChat.ts:76](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L76)
 
 ***
 
@@ -44,15 +44,15 @@ Defined in: [src/parser/youtube/LiveChat.ts:68](https://github.com/LuanRT/YouTub
 
 > **is\_replay**: `boolean` = `false`
 
-Defined in: [src/parser/youtube/LiveChat.ts:71](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L71)
+Defined in: [src/parser/youtube/LiveChat.ts:79](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L79)
 
 ***
 
 ### metadata?
 
-> `optional` **metadata**: `LiveMetadata`
+> `optional` **metadata?**: `LiveMetadata`
 
-Defined in: [src/parser/youtube/LiveChat.ts:69](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L69)
+Defined in: [src/parser/youtube/LiveChat.ts:77](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L77)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: [src/parser/youtube/LiveChat.ts:69](https://github.com/LuanRT/YouTub
 
 > **running**: `boolean` = `false`
 
-Defined in: [src/parser/youtube/LiveChat.ts:70](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L70)
+Defined in: [src/parser/youtube/LiveChat.ts:78](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L78)
 
 ***
 
@@ -68,61 +68,15 @@ Defined in: [src/parser/youtube/LiveChat.ts:70](https://github.com/LuanRT/YouTub
 
 > **smoothed\_queue**: [`SmoothedQueue`](SmoothedQueue.md)
 
-Defined in: [src/parser/youtube/LiveChat.ts:67](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L67)
+Defined in: [src/parser/youtube/LiveChat.ts:75](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L75)
 
 ## Methods
-
-### addEventListener()
-
-> **addEventListener**(`type`, `callback`, `options?`): `void`
-
-Defined in: node\_modules/typescript/lib/lib.dom.d.ts:8256
-
-Appends an event listener for events whose type attribute value is type. The callback argument sets the callback that will be invoked when the event is dispatched.
-
-The options argument sets listener-specific options. For compatibility this can be a boolean, in which case the method behaves exactly as if the value was specified as options's capture.
-
-When set to true, options's capture prevents callback from being invoked when the event's eventPhase attribute value is BUBBLING_PHASE. When false (or not present), callback will not be invoked when event's eventPhase attribute value is CAPTURING_PHASE. Either way, callback will be invoked if event's eventPhase attribute value is AT_TARGET.
-
-When set to true, options's passive indicates that the callback will not cancel the event by invoking preventDefault(). This is used to enable performance optimizations described in § 2.8 Observing event listeners.
-
-When set to true, options's once indicates that the callback will only be invoked once after which the event listener will be removed.
-
-If an AbortSignal is passed for options's signal, then the event listener will be removed when signal is aborted.
-
-The event listener is appended to target's event listener list and is not appended if it has the same type, callback, and capture.
-
-[MDN Reference](https://developer.mozilla.org/docs/Web/API/EventTarget/addEventListener)
-
-#### Parameters
-
-##### type
-
-`string`
-
-##### callback
-
-`EventListenerOrEventListenerObject` | `null`
-
-##### options?
-
-`boolean` | `AddEventListenerOptions`
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[`EventEmitter`](../../../../classes/EventEmitter.md).[`addEventListener`](../../../../classes/EventEmitter.md#addeventlistener)
-
-***
 
 ### applyFilter()
 
 > **applyFilter**(`filter`): `void`
 
-Defined in: [src/parser/youtube/LiveChat.ts:287](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L287)
+Defined in: [src/parser/youtube/LiveChat.ts:277](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L277)
 
 Applies given filter to the live chat.
 
@@ -130,9 +84,9 @@ Applies given filter to the live chat.
 
 ##### filter
 
-Filter to apply.
+`"TOP_CHAT"` \| `"LIVE_CHAT"`
 
-`"TOP_CHAT"` | `"LIVE_CHAT"`
+Filter to apply.
 
 #### Returns
 
@@ -140,47 +94,27 @@ Filter to apply.
 
 ***
 
-### dispatchEvent()
-
-> **dispatchEvent**(`event`): `boolean`
-
-Defined in: node\_modules/typescript/lib/lib.dom.d.ts:8262
-
-Dispatches a synthetic event event to target and returns true if either event's cancelable attribute value is false or its preventDefault() method was not invoked, and false otherwise.
-
-[MDN Reference](https://developer.mozilla.org/docs/Web/API/EventTarget/dispatchEvent)
-
-#### Parameters
-
-##### event
-
-`Event`
-
-#### Returns
-
-`boolean`
-
-#### Inherited from
-
-[`EventEmitter`](../../../../classes/EventEmitter.md).[`dispatchEvent`](../../../../classes/EventEmitter.md#dispatchevent)
-
-***
-
 ### emit()
 
-> **emit**(`type`, ...`args`): `void`
+> **emit**\<`K`\>(`type`, ...`args`): `void`
 
-Defined in: [src/utils/EventEmitterLike.ts:10](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/utils/EventEmitterLike.ts#L10)
+Defined in: [src/utils/EventEmitterLike.ts:7](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/EventEmitterLike.ts#L7)
+
+#### Type Parameters
+
+##### K
+
+`K` *extends* keyof `LiveChatEvents`
 
 #### Parameters
 
 ##### type
 
-`string`
+`K`
 
 ##### args
 
-...`any`[]
+...`Parameters`\<`LiveChatEvents`\[`K`\]\>
 
 #### Returns
 
@@ -196,7 +130,7 @@ Defined in: [src/utils/EventEmitterLike.ts:10](https://github.com/LuanRT/YouTube
 
 > **getItemMenu**(`item`): `Promise`\<[`ItemMenu`](ItemMenu.md)\>
 
-Defined in: [src/parser/youtube/LiveChat.ts:305](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L305)
+Defined in: [src/parser/youtube/LiveChat.ts:295](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L295)
 
 Retrieves given chat item's menu.
 
@@ -214,19 +148,25 @@ Retrieves given chat item's menu.
 
 ### off()
 
-> **off**(`type`, `listener`): `void`
+> **off**\<`K`\>(`type`, `listener`): `void`
 
-Defined in: [src/utils/EventEmitterLike.ts:40](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/utils/EventEmitterLike.ts#L40)
+Defined in: [src/utils/EventEmitterLike.ts:45](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/EventEmitterLike.ts#L45)
+
+#### Type Parameters
+
+##### K
+
+`K` *extends* keyof `LiveChatEvents`
 
 #### Parameters
 
 ##### type
 
-`string`
+`K`
 
 ##### listener
 
-(...`args`) => `void`
+`LiveChatEvents`\[`K`\]
 
 #### Returns
 
@@ -240,275 +180,25 @@ Defined in: [src/utils/EventEmitterLike.ts:40](https://github.com/LuanRT/YouTube
 
 ### on()
 
-#### Call Signature
+> **on**\<`K`\>(`type`, `listener`): `void`
 
-> **on**(`type`, `listener`): `void`
+Defined in: [src/utils/EventEmitterLike.ts:17](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/EventEmitterLike.ts#L17)
 
-Defined in: [src/parser/youtube/LiveChat.ts:108](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L108)
+#### Type Parameters
 
-##### Parameters
+##### K
 
-###### type
-
-`"start"`
-
-###### listener
-
-(`initial_data`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-[`EventEmitter`](../../../../classes/EventEmitter.md).[`on`](../../../../classes/EventEmitter.md#on)
-
-#### Call Signature
-
-> **on**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:109](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L109)
-
-##### Parameters
-
-###### type
-
-`"chat-update"`
-
-###### listener
-
-(`action`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.on`
-
-#### Call Signature
-
-> **on**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:110](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L110)
-
-##### Parameters
-
-###### type
-
-`"metadata-update"`
-
-###### listener
-
-(`metadata`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.on`
-
-#### Call Signature
-
-> **on**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:111](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L111)
-
-##### Parameters
-
-###### type
-
-`"error"`
-
-###### listener
-
-(`err`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.on`
-
-#### Call Signature
-
-> **on**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:112](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L112)
-
-##### Parameters
-
-###### type
-
-`"end"`
-
-###### listener
-
-() => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.on`
-
-***
-
-### once()
-
-#### Call Signature
-
-> **once**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:117](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L117)
-
-##### Parameters
-
-###### type
-
-`"start"`
-
-###### listener
-
-(`initial_data`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-[`EventEmitter`](../../../../classes/EventEmitter.md).[`once`](../../../../classes/EventEmitter.md#once)
-
-#### Call Signature
-
-> **once**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:118](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L118)
-
-##### Parameters
-
-###### type
-
-`"chat-update"`
-
-###### listener
-
-(`action`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.once`
-
-#### Call Signature
-
-> **once**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:119](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L119)
-
-##### Parameters
-
-###### type
-
-`"metadata-update"`
-
-###### listener
-
-(`metadata`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.once`
-
-#### Call Signature
-
-> **once**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:120](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L120)
-
-##### Parameters
-
-###### type
-
-`"error"`
-
-###### listener
-
-(`err`) => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.once`
-
-#### Call Signature
-
-> **once**(`type`, `listener`): `void`
-
-Defined in: [src/parser/youtube/LiveChat.ts:121](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L121)
-
-##### Parameters
-
-###### type
-
-`"end"`
-
-###### listener
-
-() => `void`
-
-##### Returns
-
-`void`
-
-##### Overrides
-
-`EventEmitter.once`
-
-***
-
-### removeEventListener()
-
-> **removeEventListener**(`type`, `callback`, `options?`): `void`
-
-Defined in: node\_modules/typescript/lib/lib.dom.d.ts:8268
-
-Removes the event listener in target's event listener list with the same type, callback, and options.
-
-[MDN Reference](https://developer.mozilla.org/docs/Web/API/EventTarget/removeEventListener)
+`K` *extends* keyof `LiveChatEvents`
 
 #### Parameters
 
 ##### type
 
-`string`
+`K`
 
-##### callback
+##### listener
 
-`EventListenerOrEventListenerObject` | `null`
-
-##### options?
-
-`boolean` | `EventListenerOptions`
+`LiveChatEvents`\[`K`\]
 
 #### Returns
 
@@ -516,7 +206,61 @@ Removes the event listener in target's event listener list with the same type, c
 
 #### Inherited from
 
-[`EventEmitter`](../../../../classes/EventEmitter.md).[`removeEventListener`](../../../../classes/EventEmitter.md#removeeventlistener)
+[`EventEmitter`](../../../../classes/EventEmitter.md).[`on`](../../../../classes/EventEmitter.md#on)
+
+***
+
+### once()
+
+> **once**\<`K`\>(`type`, `listener`): `void`
+
+Defined in: [src/utils/EventEmitterLike.ts:28](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/EventEmitterLike.ts#L28)
+
+#### Type Parameters
+
+##### K
+
+`K` *extends* keyof `LiveChatEvents`
+
+#### Parameters
+
+##### type
+
+`K`
+
+##### listener
+
+`LiveChatEvents`\[`K`\]
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`EventEmitter`](../../../../classes/EventEmitter.md).[`once`](../../../../classes/EventEmitter.md#once)
+
+***
+
+### removeAllListeners()
+
+> **removeAllListeners**(`type?`): `void`
+
+Defined in: [src/utils/EventEmitterLike.ts:70](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/EventEmitterLike.ts#L70)
+
+#### Parameters
+
+##### type?
+
+keyof LiveChatEvents
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`EventEmitter`](../../../../classes/EventEmitter.md).[`removeAllListeners`](../../../../classes/EventEmitter.md#removealllisteners)
 
 ***
 
@@ -524,7 +268,7 @@ Removes the event listener in target's event listener list with the same type, c
 
 > **selectButton**(`button`): `Promise`\<[`IParsedResponse`](../../../../interfaces/IParsedResponse.md)\>
 
-Defined in: [src/parser/youtube/LiveChat.ts:320](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L320)
+Defined in: [src/parser/youtube/LiveChat.ts:310](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L310)
 
 Equivalent to "clicking" a button.
 
@@ -544,7 +288,7 @@ Equivalent to "clicking" a button.
 
 > **sendMessage**(`text`): `Promise`\<[`ObservedArray`](../../Helpers/type-aliases/ObservedArray.md)\<[`RunAttestationCommand`](../../YTNodes/classes/RunAttestationCommand.md) \| [`AddChatItemAction`](../../YTNodes/classes/AddChatItemAction.md)\>\>
 
-Defined in: [src/parser/youtube/LiveChat.ts:255](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L255)
+Defined in: [src/parser/youtube/LiveChat.ts:245](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L245)
 
 Sends a message.
 
@@ -566,7 +310,7 @@ Text to send.
 
 > **start**(): `void`
 
-Defined in: [src/parser/youtube/LiveChat.ts:126](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L126)
+Defined in: [src/parser/youtube/LiveChat.ts:116](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L116)
 
 #### Returns
 
@@ -578,7 +322,7 @@ Defined in: [src/parser/youtube/LiveChat.ts:126](https://github.com/LuanRT/YouTu
 
 > **stop**(): `void`
 
-Defined in: [src/parser/youtube/LiveChat.ts:134](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/youtube/LiveChat.ts#L134)
+Defined in: [src/parser/youtube/LiveChat.ts:124](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/youtube/LiveChat.ts#L124)
 
 #### Returns
 

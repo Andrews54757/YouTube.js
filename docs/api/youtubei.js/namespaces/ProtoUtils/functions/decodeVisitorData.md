@@ -4,7 +4,7 @@
 
 > **decodeVisitorData**(`visitor_data`): `VisitorData`
 
-Defined in: [src/utils/ProtoUtils.ts:16](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/utils/ProtoUtils.ts#L16)
+Defined in: [src/utils/ProtoUtils.ts:16](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/utils/ProtoUtils.ts#L16)
 
 ## Parameters
 

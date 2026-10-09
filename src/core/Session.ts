@@ -23,6 +23,7 @@ export enum ClientType {
   IOS = 'iOS',
   ANDROID = 'ANDROID',
   ANDROID_VR = 'ANDROID_VR',
+  VISIONOS = 'VISIONOS',
   ANDROID_MUSIC = 'ANDROID_MUSIC',
   ANDROID_CREATOR = 'ANDROID_CREATOR',
   TV = 'TVHTML5',
@@ -256,7 +257,7 @@ const TAG = 'Session';
 /**
  * Represents an InnerTube session. This holds all the data needed to make requests to YouTube.
  */
-export default class Session extends EventEmitter {
+export default class Session extends EventEmitter<SessionEvents> {
   public http: HTTPClient;
   public logged_in: boolean;
   public actions: Actions;
@@ -280,14 +281,6 @@ export default class Session extends EventEmitter {
     this.actions = new Actions(this);
     this.logged_in = !!cookie;
     this.user_agent = context.client.userAgent;
-  }
-
-  on(type: string, listener: (...args: any[]) => void): void {
-    super.on(type, listener);
-  }
-
-  once(type: string, listener: (...args: any[]) => void): void {
-    super.once(type, listener);
   }
 
   async getPot(tokens: string[]): Promise<string> {
@@ -551,7 +544,7 @@ export default class Session extends EventEmitter {
 
     const buffer = BinarySerializer.serialize({
       ...session_data,
-      library_version: parseInt(packageInfo.version)
+      library_version: parseInt(packageInfo.version.split('.', 1)[0])
     });
 
     await cache.set('innertube_session_data', buffer);
@@ -581,9 +574,9 @@ export default class Session extends EventEmitter {
     const text = await res.text();
 
     if (!text.startsWith(')]}\''))
-      throw new SessionError('Invalid JSPB response');
+      throw new SessionError('Incorrect JSPB formatting');
 
-    const data = JSON.parse(text.replace(/^\)\]\}'/, ''));
+    const data = JSON.parse(text.substring(5));
 
     const ytcfg = data[0][2];
 

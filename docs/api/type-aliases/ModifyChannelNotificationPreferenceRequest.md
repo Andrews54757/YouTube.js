@@ -4,20 +4,20 @@
 
 > **ModifyChannelNotificationPreferenceRequest** = `object`
 
-Defined in: [src/parser/types/CommandEndpoints.ts:194](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/types/CommandEndpoints.ts#L194)
+Defined in: [src/parser/types/CommandEndpoints.ts:194](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/types/CommandEndpoints.ts#L194)
 
 ## Properties
 
 ### params?
 
-> `optional` **params**: `string`
+> `optional` **params?**: `string`
 
-Defined in: [src/parser/types/CommandEndpoints.ts:195](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/types/CommandEndpoints.ts#L195)
+Defined in: [src/parser/types/CommandEndpoints.ts:195](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/types/CommandEndpoints.ts#L195)
 
 ***
 
 ### secondaryParams?
 
-> `optional` **secondaryParams**: `string`
+> `optional` **secondaryParams?**: `string`
 
-Defined in: [src/parser/types/CommandEndpoints.ts:196](https://github.com/LuanRT/YouTube.js/blob/0733f60b57877f6b8b87dfd5cc6195b5085f5c09/src/parser/types/CommandEndpoints.ts#L196)
+Defined in: [src/parser/types/CommandEndpoints.ts:196](https://github.com/LuanRT/YouTube.js/blob/06bfc6afd419ea622aac9ce491b749456ebda028/src/parser/types/CommandEndpoints.ts#L196)
