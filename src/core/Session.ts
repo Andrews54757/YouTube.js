@@ -257,7 +257,7 @@ const TAG = 'Session';
 /**
  * Represents an InnerTube session. This holds all the data needed to make requests to YouTube.
  */
-export default class Session extends EventEmitter<SessionEvents> {
+export default class Session extends EventEmitter<any> {
   public http: HTTPClient;
   public logged_in: boolean;
   public actions: Actions;
